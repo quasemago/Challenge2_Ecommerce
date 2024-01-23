@@ -18,8 +18,7 @@ public class ErrorMessage {
     private int code;
     private String status;
     private String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<FieldErrorDetails> details;
+    private final List<FieldErrorDetails> details = new ArrayList<>();
 
     public ErrorMessage(HttpStatus status, String message) {
         this.code = status.value();
@@ -31,7 +30,6 @@ public class ErrorMessage {
         this.code = status.value();
         this.status = status.getReasonPhrase();
         this.message = message;
-        this.details = new ArrayList<>();
         addDetails(result);
     }
 
