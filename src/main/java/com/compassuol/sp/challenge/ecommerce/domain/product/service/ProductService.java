@@ -1,5 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.domain.product.service;
 
+import com.compassuol.sp.challenge.ecommerce.domain.product.exception.ProductNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.repository.ProductRepository;
