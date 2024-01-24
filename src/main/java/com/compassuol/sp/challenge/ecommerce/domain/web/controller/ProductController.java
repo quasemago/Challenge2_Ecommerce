@@ -27,12 +27,12 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping
+    @GetMapping("/products")
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
 
         List<Product> products = productService.getAllProducts();
         List<ProductResponseDto> productResponseDtos = ProductMapper.toDtoList(products);
-        
+
         return ResponseEntity.ok(productResponseDtos);
     }
 
