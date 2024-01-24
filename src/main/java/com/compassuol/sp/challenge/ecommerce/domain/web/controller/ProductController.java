@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,10 @@ public class ProductController {
         return null;
     }
 
-    public ResponseEntity<Product> getProductById() {
-        return null;
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        return ResponseEntity.ok(ProductMapper.toDto(product));
     }
 
     @Operation(summary = "Cria um novo produto.", description = "Recurso para criar um novo produto.",
