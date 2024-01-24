@@ -1,6 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.domain.web.exception;
 
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,5 +30,12 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(HttpStatus.CONFLICT, ex.getMessage()));
+    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(HttpStatus.NOT_FOUND, "Produto não encontrado.", ex.getMessage()));
     }
 }

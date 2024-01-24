@@ -33,6 +33,12 @@ public class ErrorMessage {
         addDetails(result);
     }
 
+    public ErrorMessage(HttpStatus status, String message, String exceptionMessage) {
+        this.code = status.value();
+        this.status = status.getReasonPhrase();
+        this.message = message;
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
