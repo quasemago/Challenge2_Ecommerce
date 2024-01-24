@@ -16,9 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 
 @Tag(name = "Products API", description = "Contém as operações relativas aos recursos de interação com o domínio produtos.")
 @RequiredArgsConstructor
@@ -27,8 +25,21 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return null;
+    @Operation(summary = "Lista todos os produtos.", description = "Recurso para listar todos os produtos.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Lista de produtos",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
+                    )
+            }
+    )
+
+    @GetMapping
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+
+        List<Product> products = productService.getAllProducts();
+        List<ProductResponseDto> productResponseDtos = ProductMapper.toDtoList(products);
+
+        return ResponseEntity.ok(productResponseDtos);
     }
 
     public ResponseEntity<Product> getProductById() {
