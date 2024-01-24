@@ -5,6 +5,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 
@@ -19,7 +20,10 @@ public class ProductMapper {
     }
 
     public static List<ProductResponseDto> toDtoList(List<Product> products) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toDtoList'");
+        return products.stream()
+            .map(ProductMapper::toDto)
+            .collect(Collectors.toList());
+        
     }
+    
 }

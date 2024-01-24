@@ -32,8 +32,9 @@ public class ProductService {
         }
         productRepository.deleteById(productId);
     }
+
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllProducts'");
+        return productRepository.findAll();
     }
 }

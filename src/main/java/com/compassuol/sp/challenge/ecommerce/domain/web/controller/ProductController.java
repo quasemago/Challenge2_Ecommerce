@@ -33,7 +33,7 @@ public class ProductController {
             }
     )
 
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
 
         List<Product> products = productService.getAllProducts();
