@@ -79,6 +79,8 @@ public class ProductControllerTest {
                         jsonPath("$.description").value(responseBody.getDescription()),
                         jsonPath("$.value").value(responseBody.getValue())
                 );
+
+        verify(productService, times(1)).create(any(Product.class));
     }
 
     @Test
@@ -93,6 +95,8 @@ public class ProductControllerTest {
                                 .content(objectMapper.writeValueAsString(createProductDto(invalidProduct)))
                 )
                 .andExpect(status().isBadRequest());
+
+        verify(productService, never()).create(any(Product.class));
     }
 
     @Test
@@ -123,6 +127,8 @@ public class ProductControllerTest {
                         jsonPath("$[1].description").value(listDto.get(1).getDescription()),
                         jsonPath("$[1].value").value(listDto.get(1).getValue())
                 );
+
+        verify(productService, times(1)).getAllProducts();
     }
 
     @Test
@@ -133,6 +139,8 @@ public class ProductControllerTest {
                         get("/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
+
+        verify(productService, times(1)).getAllProducts();
     }
 
     @Test
@@ -154,6 +162,8 @@ public class ProductControllerTest {
                         jsonPath("$.description").value(dto.getDescription()),
                         jsonPath("$.value").value(dto.getValue())
                 );
+
+        verify(productService, times(1)).getProductById(1L);
     }
 
     @Test
@@ -164,6 +174,8 @@ public class ProductControllerTest {
                         get("/products/{id}", 1L)
                 )
                 .andExpect(status().isNotFound());
+
+        verify(productService, times(1)).getProductById(1L);
     }
 
     @Test
@@ -174,6 +186,8 @@ public class ProductControllerTest {
                         delete("/products/{id}", 1L)
                 )
                 .andExpect(status().isNoContent());
+
+        verify(productService, times(1)).deleteProduct(1L);
     }
 
     @Test
@@ -184,5 +198,7 @@ public class ProductControllerTest {
                         delete("/products/{id}", 1L)
                 )
                 .andExpect(status().isNotFound());
+
+        verify(productService, times(1)).deleteProduct(1L);
     }
 }
