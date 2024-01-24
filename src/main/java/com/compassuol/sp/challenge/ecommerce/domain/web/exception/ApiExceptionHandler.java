@@ -1,12 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.domain.web.exception;
 
-import com.compassuol.sp.challenge.ecommerce.domain.product.exception.ProductNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,23 +32,8 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(HttpStatus.CONFLICT, ex.getMessage()));
     }
 
-    @Operation(summary = "Atualiza um produto existente", description = "Recurso para atualizar os detalhes de um produto existente.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
-                    ),
-                    @ApiResponse(responseCode = "400", description = "Requisição inválida.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
-                    ),
-                    @ApiResponse(responseCode = "404", description = "Produto não encontrado.",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
-                    )
-            }
-    )
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleProductNotFoundException(ProductNotFoundException ex,
-                                                                       HttpServletRequest request) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
