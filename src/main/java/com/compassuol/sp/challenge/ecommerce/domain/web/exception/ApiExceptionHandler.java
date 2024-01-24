@@ -31,11 +31,12 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(HttpStatus.CONFLICT, ex.getMessage()));
     }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(HttpStatus.NOT_FOUND, "Produto não encontrado.", ex.getMessage()));
+                .body(new ErrorMessage(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 }
