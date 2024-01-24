@@ -28,13 +28,13 @@ public class ProductService {
     }
 
     @Transactional
-    public Product update(ProductCreateDto dto, Long id) {
+    public Product update(Product product, Long id) {
         Product existingProduct = productRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Produto não encontrado")
+                () -> new EntityNotFoundException("Não existe o produto com o Id: " + id)
         );
-        existingProduct.setName(dto.getName());
-        existingProduct.setValue(dto.getValue());
-        existingProduct.setDescription(dto.getDescription());
+        existingProduct.setName(product.getName());
+        existingProduct.setValue(product.getValue());
+        existingProduct.setDescription(product.getDescription());
         return productRepository.save(existingProduct);
 
     }
