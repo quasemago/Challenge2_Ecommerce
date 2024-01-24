@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -163,6 +162,26 @@ public class ProductControllerTest {
 
         mockMvc.perform(
                         get("/products/{id}", 1L)
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteProduct_WithExistingId_ReturnsNoContent() throws Exception {
+        doNothing().when(productService).deleteProduct(1L);
+
+        mockMvc.perform(
+                        delete("/products/{id}", 1L)
+                )
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteProduct_WithNonExistingId_ReturnsNotFound() throws Exception {
+        doThrow(EntityNotFoundException.class).when(productService).deleteProduct(1L);
+
+        mockMvc.perform(
+                        delete("/products/{id}", 1L)
                 )
                 .andExpect(status().isNotFound());
     }
