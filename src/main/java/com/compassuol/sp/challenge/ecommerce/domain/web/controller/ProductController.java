@@ -5,6 +5,12 @@ import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductServi
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.ProductMapper;
+import com.compassuol.sp.challenge.ecommerce.domain.web.exception.ErrorMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,11 +46,16 @@ public class ProductController {
         return null;
     }
 
-    public ResponseEntity<Void> deleteProduct() {
-        return null;
-    }
+    @Operation(summary = "Deletar produto pelo ID", description = "Recurso para deletar um produto pelo ID.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Produto deletado com sucesso"),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            }
+    )
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
