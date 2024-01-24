@@ -55,10 +55,22 @@ public class ProductController {
                 .status(HttpStatus.CREATED)
                 .body(ProductMapper.toDto(product));
     }
-
-    @PutMapping("/{productId}")
-    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long productId, @Valid @RequestBody ProductCreateDto dto) {
-        Product updatedProduct = productService.update(dto, productId);
+    @Operation(summary = "Atualiza um produto existente", description = "Recurso para atualizar os detalhes de um produto existente.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductCreateDto dto) {
+        Product updatedProduct = productService.update(dto, id);
         return ResponseEntity.ok(ProductMapper.toDto(updatedProduct));
     }
 
