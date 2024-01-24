@@ -47,6 +47,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public Product getProductById(Long id) {
+        return productRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Nenhum produto foi encontrado com este Id: " + id)
+        );
+    }
+
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
