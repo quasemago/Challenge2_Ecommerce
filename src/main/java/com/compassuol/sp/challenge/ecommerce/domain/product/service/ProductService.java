@@ -5,6 +5,9 @@ import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,5 +31,9 @@ public class ProductService {
             throw new EntityNotFoundException("Não existe o produto com o Id: " + productId);
         }
         productRepository.deleteById(productId);
+    }
+    public List<Product> getAllProducts() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllProducts'");
     }
 }

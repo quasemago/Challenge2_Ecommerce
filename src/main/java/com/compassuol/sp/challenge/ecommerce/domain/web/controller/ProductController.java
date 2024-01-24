@@ -27,8 +27,13 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return null;
+    @GetMapping
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+
+        List<Product> products = productService.getAllProducts();
+        List<ProductResponseDto> productResponseDtos = ProductMapper.toDtoList(products);
+        
+        return ResponseEntity.ok(productResponseDtos);
     }
 
     public ResponseEntity<Product> getProductById() {
