@@ -201,4 +201,62 @@ public class ProductControllerTest {
 
         verify(productService, times(1)).deleteProduct(1L);
     }
+
+    @Test
+    public void updateProduct_WithValidData_ReturnsProduct() throws Exception {
+        final Product product = Product.builder()
+                .name("Product Name").description("Description Description").value(BigDecimal.valueOf(10.0))
+                .build();
+
+        when(productService.update(any(Product.class), eq(1L))).thenReturn(product);
+        final ProductResponseDto responseBody = toResponseDto(product);
+
+        mockMvc.perform(
+                        put("/products/{id}", 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(createProductDto(product)))
+                )
+                .andExpect(status().isOk())
+                .andExpectAll(
+                        jsonPath("$.name").value(responseBody.getName()),
+                        jsonPath("$.description").value(responseBody.getDescription()),
+                        jsonPath("$.value").value(responseBody.getValue())
+                );
+
+        verify(productService, times(1)).update(any(Product.class), eq(1L));
+    }
+
+    @Test
+    public void updateProduct_WithInvalidData_ReturnsBadRequest() throws Exception {
+        final Product product = Product.builder()
+                .name("").description("short").value(BigDecimal.valueOf(-10.0))
+                .build();
+
+        mockMvc.perform(
+                        put("/products/{id}", 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(createProductDto(product)))
+                )
+                .andExpect(status().isBadRequest());
+
+        verify(productService, never()).update(any(Product.class), eq(1L));
+    }
+
+    @Test
+    public void updateProduct_WithNonExistingId_ReturnsNotFound() throws Exception {
+        final Product product = Product.builder()
+                .name("Product Name").description("Description Description").value(BigDecimal.valueOf(10.0))
+                .build();
+
+        doThrow(EntityNotFoundException.class).when(productService).update(any(Product.class), eq(1L));
+
+        mockMvc.perform(
+                        put("/products/{id}", 1L)
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(createProductDto(product)))
+                )
+                .andExpect(status().isNotFound());
+
+        verify(productService, times(1)).update(any(Product.class), eq(1L));
+    }
 }
