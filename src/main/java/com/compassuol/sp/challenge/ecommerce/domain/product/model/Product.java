@@ -15,6 +15,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @Entity
+@Builder
 @Table(name = "products")
 public class Product implements Serializable {
     @Id
