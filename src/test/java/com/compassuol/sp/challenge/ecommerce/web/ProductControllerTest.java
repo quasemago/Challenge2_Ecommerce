@@ -5,7 +5,6 @@ import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductServi
 import com.compassuol.sp.challenge.ecommerce.domain.web.controller.ProductController;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.ProductMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,16 +40,23 @@ public class ProductControllerTest {
         return dto;
     }
 
+    private static ProductResponseDto toResponseDto(Product p) {
+        ProductResponseDto dto = new ProductResponseDto();
+        dto.setId(p.getId());
+        dto.setName(p.getName());
+        dto.setDescription(p.getDescription());
+        dto.setValue(p.getValue());
+        return dto;
+    }
+
     @Test
     public void createProduct_WithValidData_ReturnsProduct() throws Exception {
         final Product validProduct = Product.builder()
-                .name("Product Valid")
-                .description("Description Valid")
-                .value(BigDecimal.valueOf(10.0))
+                .name("Product Valid").description("Description Valid").value(BigDecimal.valueOf(10.0))
                 .build();
 
-        when(productService.create(any())).thenReturn(validProduct);
-        final ProductResponseDto dto = ProductMapper.toDto(validProduct);
+        when(productService.create(any(Product.class))).thenReturn(validProduct);
+        final ProductResponseDto responseBody = toResponseDto(validProduct);
 
         mockMvc.perform(
                         post("/products")
@@ -59,18 +65,16 @@ public class ProductControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpectAll(
-                        jsonPath("$.name").value(dto.getName()),
-                        jsonPath("$.description").value(dto.getDescription()),
-                        jsonPath("$.value").value(dto.getValue())
+                        jsonPath("$.name").value(responseBody.getName()),
+                        jsonPath("$.description").value(responseBody.getDescription()),
+                        jsonPath("$.value").value(responseBody.getValue())
                 );
     }
 
     @Test
     public void createProduct_WithInvalidData_ReturnsBadRequest() throws Exception {
         final Product invalidProduct = Product.builder()
-                .name("")
-                .description("short")
-                .value(BigDecimal.valueOf(-10.0))
+                .name("").description("short").value(BigDecimal.valueOf(-10.0))
                 .build();
 
         mockMvc.perform(
