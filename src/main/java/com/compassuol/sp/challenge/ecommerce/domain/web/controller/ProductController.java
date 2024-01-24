@@ -5,6 +5,10 @@ import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductServi
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.ProductMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,13 @@ public class ProductController {
         return null;
     }
 
+    @Operation(summary = "Cria um novo produto.", description = "Recurso para criar um novo produto.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Produto criado com sucesso.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
+                    )
+            }
+    )
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductCreateDto dto) {
         final Product product = productService.create(ProductMapper.toProduct(dto));
