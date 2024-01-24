@@ -29,4 +29,11 @@ public class ProductService {
         }
         productRepository.deleteById(productId);
     }
+
+    @Transactional(readOnly = true)
+    public Product getProductById(Long id) {
+        return productRepository.findById(id).orElseThrow(
+                () ->new EntityNotFoundException("Nenhum produto foi encontrado com este Id: " + id)
+        );
+    }
 }
