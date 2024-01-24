@@ -3,6 +3,7 @@ package com.compassuol.sp.challenge.ecommerce.domain.product.service;
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.repository.ProductRepository;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,19 @@ public class ProductService {
             throw new UniqueProductViolationException("Já existe um produto cadastrado com esse nome.");
         }
     }
+
     @Transactional
+    public Product update(ProductCreateDto dto, Long id) {
+        Product existingProduct = productRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Produto não encontrado")
+        );
+        existingProduct.setName(dto.getName());
+        existingProduct.setValue(dto.getValue());
+        existingProduct.setDescription(dto.getDescription());
+        return productRepository.save(existingProduct);
+
+    }
+
     public void deleteProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new EntityNotFoundException("Não existe o produto com o Id: " + productId);

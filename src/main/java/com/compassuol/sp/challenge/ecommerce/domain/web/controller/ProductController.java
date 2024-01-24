@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 
 @Tag(name = "Products API", description = "Contém as operações relativas aos recursos de interação com o domínio produtos.")
 @RequiredArgsConstructor
@@ -32,14 +34,10 @@ public class ProductController {
                     )
             }
     )
-
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-
         List<Product> products = productService.getAllProducts();
-        List<ProductResponseDto> productResponseDtos = ProductMapper.toDtoList(products);
-
-        return ResponseEntity.ok(productResponseDtos);
+        return ResponseEntity.ok(ProductMapper.toDtoList(products));
     }
 
     public ResponseEntity<Product> getProductById() {
@@ -67,8 +65,23 @@ public class ProductController {
                 .body(ProductMapper.toDto(product));
     }
 
-    public ResponseEntity<Product> updateProduct() {
-        return null;
+    @Operation(summary = "Atualiza um produto existente", description = "Recurso para atualizar os detalhes de um produto existente.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductCreateDto dto) {
+        Product updatedProduct = productService.update(dto, id);
+        return ResponseEntity.ok(ProductMapper.toDto(updatedProduct));
     }
 
     @Operation(summary = "Deletar produto pelo ID", description = "Recurso para deletar um produto pelo ID.",
