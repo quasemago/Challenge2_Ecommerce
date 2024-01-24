@@ -6,6 +6,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.web.controller.ProductContro
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -133,5 +134,36 @@ public class ProductControllerTest {
                         get("/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    public void getProductById_WithExistingId_ReturnsProduct() throws Exception {
+        final Product product = Product.builder()
+                .id(1L).name("Product 1").description("Description 1").value(BigDecimal.valueOf(10.0))
+                .build();
+
+        when(productService.getProductById(1L)).thenReturn(product);
+
+        final ProductResponseDto dto = toResponseDto(product);
+
+        mockMvc.perform(
+                        get("/products/{id}", 1L)
+                )
+                .andExpect(status().isOk())
+                .andExpectAll(
+                        jsonPath("$.name").value(dto.getName()),
+                        jsonPath("$.description").value(dto.getDescription()),
+                        jsonPath("$.value").value(dto.getValue())
+                );
+    }
+
+    @Test
+    public void getProductById_WithNonExistingId_ReturnsNotFound() throws Exception {
+        when(productService.getProductById(1L)).thenThrow(EntityNotFoundException.class);
+
+        mockMvc.perform(
+                        get("/products/{id}", 1L)
+                )
+                .andExpect(status().isNotFound());
     }
 }
