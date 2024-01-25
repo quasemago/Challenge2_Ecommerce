@@ -82,7 +82,11 @@ public class ProductController {
                 .body(ProductMapper.toDto(product));
     }
 
-    @Operation(summary = "Atualiza um produto existente", description = "Recurso para atualizar os detalhes de um produto existente.",
+    @Operation(summary = "Atualizar um produto existente.", description = "Recurso para atualizar as informações de um produto existente através do Id.",
+            parameters = {
+                    @Parameter(name = "id", description = "Identificador (Id) do produto no banco de dados.",
+                            in = ParameterIn.PATH, required = true)
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso.",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
