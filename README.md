@@ -15,9 +15,51 @@ A entidade "Produto" é representado por um modelo Java denominado `Product`. Ca
 - **Endpoints:**
 
   - A API disponibiliza endpoints RESTful para interação. Os principais são:
-
+  
     - `GET /products`: Retorna a lista de todos os produtos.
     - `GET /products/{id}`: Retorna os detalhes de um produto específico.
     - `POST /products`: Cria um novo produto.
     - `PUT /products/{id}`: Atualiza os detalhes de um produto existente.
     - `DELETE /products/{id}`: Deleta um produto existente.
+
+- **DTOs (Objetos de Transferência de Dados):**
+
+  - Para interações com a API, utilize objetos de transferência de dados (DTOs).
+    - `ProductCreateDto`: Use para criar novos produtos, fornecendo nome, descrição e preço.
+    - `ProductResponseDto`: Representa os detalhes de um produto para leitura.
+
+- **Exemplos:**
+
+  - Para criar um novo produto:
+
+    ```json
+    POST /products
+    {
+      "name": "Nome do Produto",
+      "description": "Descrição do Produto",
+      "value": 29.99
+    }
+    ```
+
+  - Para obter detalhes de um produto:
+
+    ```json
+    GET /products/1
+    ```
+
+  - Para atualizar um produto existente:
+  
+    ```json
+    PUT /products/1
+    {
+      "name": "Novo Nome",
+      "description": "Nova Descrição",
+      "value": 39.99
+    }
+    ```
+
+  - Para deletar um produto:
+    ```json
+    DELETE /products/1
+    ```
+
