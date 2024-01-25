@@ -7,6 +7,22 @@ Cada domínio possui 5 (cinco) endpoints, e foram todos documentados utilizando 
 Para testes das implementações, foi utilizado inicialmente o aplicativo Postman, cobrindo assim os testes de requisições.
 Ademais, posteriormente para testes de únidades e integração, foi utilizado o JUnit 5 em conjunto com o Mockito.
 
+## Sumário
+- [Challenge 2 - E-commerce (CompassUOL)](#challenge-2---e-commerce-compassuol)
+  - [Regras de negócio gerais](#regras-de-negócio-gerais)
+  - [Tecnologias utilizadas](#tecnologias-utilizadas)
+    - [Dependências](#dependências)
+  - [Sumário](#sumário)
+  - [Domínio Produto](#domínio-produto)
+    - [Regras de negócio](#regras-de-negócio)
+    - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
+    - [Endpoints](#endpoints)
+      - [Payloads](#payloads)
+      - [Exemplos de requisições](#exemplos-de-requisições)
+    - [Fluxo de erros](#fluxo-de-erros)
+  - [Como executar o projeto](#como-executar-o-projeto)
+  - [Conclusão](#conclusão)
+
 ## Regras de negócio gerais
 Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de negócio em comum, sendo elas:
 - Todos os campos data, devem seguir o padrão ISO 8601 (exemplo: 2023-07-20T12:00:00Z ).
@@ -30,8 +46,9 @@ Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de n
 - Lombok
 - Banco de dados H2 (utilizando apenas na camada de testes)
 - Banco de dados MySQL
+
 ---
-# Produto
+# Domínio Produto
 O domínio **Produto** consiste em uma API REST que permite que os usuários criem, leiam, atualizem e excluam produtos.
 
 ## Regras de negócio
@@ -58,15 +75,15 @@ A API disponibiliza endpoints REST para interação. Os principais são:
 ### Payloads
 
 Ademais, a API possui os seguintes payloads para interação:
-- `ProductCreate`: Payload utilizado para criação e atualização de um produto.
+- `ProductCreate`: Payload utilizado para criação e atualização de um produto. Exemplo:
     ```json
     {
-        "name": "Product name",
-        "description": "Product description",
-        "value": 10.5
+      "name": "Product name",
+      "description": "Product description",
+      "value": 10.5
     }
     ```
-- `ProductResponse`: Payload utilizado para retorno de informações de um produto.
+- `ProductResponse`: Payload utilizado para retorno de informações de um produto. Exemplo:
     ```json
     {
       "id": 1,
@@ -156,6 +173,39 @@ Ademais, a API possui os seguintes payloads para interação:
     ```
 - Resposta (Status 204 - No Content):
   - Nesse caso, não há corpo de resposta, pois a resposta é sem conteúdo.
+---
+# Fluxo de erros
+Para tratamento de exceções, a API possui um fluxo de erros padrão, que consiste em um payload de resposta chamado `ErrorMessage`, que possui as informações do código do erro, o _status_, a mensagem e por fim, os detalhes se existir.
+
+Exemplo de resposta de erro, ao tentar cadastrar um produto com o nome já existente no banco de dados:
+```json
+{
+  "code": 409,
+  "status": "Conflict",
+  "message": "Já existe um produto cadastrado com esse nome.",
+  "details": []
+}
+```
+
+Exemplo de erro ao tentar cadastrar um produto com campos mal formatados ou incompletos:
+```json
+{
+    "code": 400,
+    "status": "Bad Request",
+    "message": "Campo(s) inválido(s).",
+    "details": [
+        {
+            "field": "value",
+            "message": "O valor do produto deve ser um número positivo."
+        },
+        {
+            "field": "name",
+            "message": "O nome do produto não pode estar em branco."
+        }
+    ]
+}
+```
+
 ---
 # Como executar o projeto
 TODO
