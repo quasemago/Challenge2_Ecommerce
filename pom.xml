@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.compassuol.sp.challenge</groupId>
 	<artifactId>e-commerce</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>e-commerce</name>
 	<description>Challenge 2 - E-commerce project</description>
 	<properties>
