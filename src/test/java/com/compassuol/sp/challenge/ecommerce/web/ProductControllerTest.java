@@ -1,5 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.web;
 
+import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
 import com.compassuol.sp.challenge.ecommerce.domain.web.controller.ProductController;
@@ -91,6 +92,30 @@ public class ProductControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(productService, never()).create(any(Product.class));
+    }
+
+    @Test
+    public void createProduct_WithDuplicateName_ReturnsConflict() throws Exception {
+        when(productService.create(any(Product.class))).thenThrow(UniqueProductViolationException.class);
+
+        mockMvc.perform(
+                        post("/products")
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(createProductDto(VALID_PRODUCT)))
+                )
+                .andExpect(status().isConflict());
+
+        verify(productService, times(1)).create(any(Product.class));
+    }
+
+    @Test
+    public void createProduct_WithInvalidFields_ReturnsInternalServerError() throws Exception {
+        mockMvc.perform(
+                        post("/products")
+                                .contentType("application/json")
+                                .content("{\"name\": \"Product 1\", \"description\": \"Description 1\", \"value\": \"teste\"}")
+                )
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
