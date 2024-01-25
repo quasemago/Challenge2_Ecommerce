@@ -91,4 +91,13 @@ public class ProductRepositoryTest {
         assertThat(productOpt).isEmpty();
     }
 
+    @Test
+    public void deleteProduct_WithExistingId_DeleteProductFromDataBase() {
+        Product planet = testEntityManager.persistFlushFind(VALID_PRODUCT);
+
+        productRepository.deleteById(planet.getId());
+
+        Product removedPlanet = testEntityManager.find(Product.class, planet.getId());
+        assertThat(removedPlanet).isNull();
+    }
 }
