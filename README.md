@@ -10,3 +10,14 @@ A API REST de gerenciamento de produtos em E-commerce é um sistema desenvolvido
 
 A entidade "Produto" é representado por um modelo Java denominado `Product`. Cada produto possui atributos essenciais como nome, preço, e descrição, contendo cada um configurações específicas obedecendo as regras de negócio.
 
+**3. Como Usar a API:**
+
+- **Endpoints:**
+
+  - A API disponibiliza endpoints RESTful para interação. Os principais são:
+
+    - `GET /products`: Retorna a lista de todos os produtos.
+    - `GET /products/{id}`: Retorna os detalhes de um produto específico.
+    - `POST /products`: Cria um novo produto.
+    - `PUT /products/{id}`: Atualiza os detalhes de um produto existente.
+    - `DELETE /products/{id}`: Deleta um produto existente.
