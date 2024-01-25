@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -58,9 +59,11 @@ public class ProductServiceTest {
         List<Product> mockProducts = Arrays.asList(PRODUCT_1, PRODUCT_2);
         when(productRepository.findAll()).thenReturn(mockProducts);
         List<Product> sut = productService.getAllProducts();
+
         assertThat(sut).isNotNull();
         assertThat(sut).hasSize(2);
         assertThat(sut).containsExactlyInAnyOrder(PRODUCT_1, PRODUCT_2);
+
         verify(productRepository).findAll();
 
     }
@@ -68,7 +71,9 @@ public class ProductServiceTest {
     public void getAllProducts_ReturnNoProducts(){
         when(productRepository.findAll()).thenReturn(Collections.emptyList());
         List<Product> sut = productService.getAllProducts();
+
         assertThat(sut).isEmpty();
+
         verify(productRepository).findAll();
 
     }
@@ -76,7 +81,9 @@ public class ProductServiceTest {
     public void deleteProduct_WithExistingId_doesNotThrowAnyException(){
         Long productId = 1L;
         when(productRepository.existsById(productId)).thenReturn(true);
+
         assertThatCode(() -> productService.deleteProduct(productId)).doesNotThrowAnyException();
+
         verify(productRepository).existsById(productId);
         verify(productRepository).deleteById(productId);
 
@@ -95,5 +102,37 @@ public class ProductServiceTest {
         verify(productRepository, never()).deleteById(productId);
     }
 
+    @Test
+    public void updateProduct_WithExistingId_ReturnsUpdatedProduct() {
 
+        Long productId = 3L;
+        when(productRepository.findById(productId)).thenReturn(Optional.of(EXISTING_PRODUCT));
+        when(productRepository.save(EXISTING_PRODUCT)).thenReturn(UPDATED_PRODUCT);
+
+        Product sut = productService.update(UPDATED_PRODUCT, productId);
+
+        assertThat(sut).isNotNull();
+        assertThat(sut).isEqualTo(UPDATED_PRODUCT);
+        assertThat(EXISTING_PRODUCT.getName()).isEqualTo("New Name");
+        assertThat(EXISTING_PRODUCT.getValue()).isEqualTo(new BigDecimal(20.0));
+        assertThat(EXISTING_PRODUCT.getDescription()).isEqualTo("New Description");
+
+        verify(productRepository).findById(productId);
+        verify(productRepository).save(EXISTING_PRODUCT);
+    }
+
+    @Test
+    public void updateProduct_ProductDoesNotExist_ThrowsEntityNotFoundException() {
+
+        Long productId = 3L;
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+
+        assertThatThrownBy(() -> productService.update(UPDATED_PRODUCT, productId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Não existe o produto com o Id: " + productId);
+
+        verify(productRepository).findById(productId);
+        verify(productRepository, never()).save(any(Product.class));
+    }
 }
