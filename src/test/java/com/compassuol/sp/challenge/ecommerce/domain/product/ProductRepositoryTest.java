@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.VALID_PRODUCT;
@@ -35,6 +36,7 @@ public class ProductRepositoryTest {
     public void afterEach() {
         VALID_PRODUCT.setId(null);
     }
+
     @Test
     public void createProduct_WithValidData_ReturnsProduct() {
         Product savedProduct = productRepository.save(VALID_PRODUCT);
@@ -72,5 +74,21 @@ public class ProductRepositoryTest {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    @Test
+    public void getProductById_WithExistingId_ReturnsProduct() {
+        Product product = testEntityManager.persistFlushFind(VALID_PRODUCT);
+
+        Optional<Product> productOpt = productRepository.findById(product.getId());
+
+        assertThat(productOpt).isNotEmpty();
+        assertThat(productOpt.get()).isEqualTo(product);
+    }
+
+    @Test
+    public void getProductById_WithNonExistingId_ReturnsEmpty() {
+        Optional<Product> productOpt = productRepository.findById(1L);
+
+        assertThat(productOpt).isEmpty();
+    }
 
 }
