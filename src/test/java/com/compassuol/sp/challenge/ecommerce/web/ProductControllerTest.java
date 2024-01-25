@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.INVALID_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.VALID_PRODUCT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -61,17 +63,13 @@ public class ProductControllerTest {
 
     @Test
     public void createProduct_WithValidData_ReturnsProduct() throws Exception {
-        final Product validProduct = Product.builder()
-                .name("Product Valid").description("Description Valid").value(BigDecimal.valueOf(10.0))
-                .build();
-
-        when(productService.create(any(Product.class))).thenReturn(validProduct);
-        final ProductResponseDto responseBody = toResponseDto(validProduct);
+        when(productService.create(any(Product.class))).thenReturn(VALID_PRODUCT);
+        final ProductResponseDto responseBody = toResponseDto(VALID_PRODUCT);
 
         mockMvc.perform(
                         post("/products")
                                 .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(createProductDto(validProduct)))
+                                .content(objectMapper.writeValueAsString(createProductDto(VALID_PRODUCT)))
                 )
                 .andExpect(status().isCreated())
                 .andExpectAll(
@@ -85,14 +83,10 @@ public class ProductControllerTest {
 
     @Test
     public void createProduct_WithInvalidData_ReturnsBadRequest() throws Exception {
-        final Product invalidProduct = Product.builder()
-                .name("").description("short").value(BigDecimal.valueOf(-10.0))
-                .build();
-
         mockMvc.perform(
                         post("/products")
                                 .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(createProductDto(invalidProduct)))
+                                .content(objectMapper.writeValueAsString(createProductDto(INVALID_PRODUCT)))
                 )
                 .andExpect(status().isBadRequest());
 
@@ -204,17 +198,13 @@ public class ProductControllerTest {
 
     @Test
     public void updateProduct_WithValidData_ReturnsProduct() throws Exception {
-        final Product product = Product.builder()
-                .name("Product Name").description("Description Description").value(BigDecimal.valueOf(10.0))
-                .build();
-
-        when(productService.update(any(Product.class), eq(1L))).thenReturn(product);
-        final ProductResponseDto responseBody = toResponseDto(product);
+        when(productService.update(any(Product.class), eq(1L))).thenReturn(VALID_PRODUCT);
+        final ProductResponseDto responseBody = toResponseDto(VALID_PRODUCT);
 
         mockMvc.perform(
                         put("/products/{id}", 1L)
                                 .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(createProductDto(product)))
+                                .content(objectMapper.writeValueAsString(createProductDto(VALID_PRODUCT)))
                 )
                 .andExpect(status().isOk())
                 .andExpectAll(
@@ -228,14 +218,10 @@ public class ProductControllerTest {
 
     @Test
     public void updateProduct_WithInvalidData_ReturnsBadRequest() throws Exception {
-        final Product product = Product.builder()
-                .name("").description("short").value(BigDecimal.valueOf(-10.0))
-                .build();
-
         mockMvc.perform(
                         put("/products/{id}", 1L)
                                 .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(createProductDto(product)))
+                                .content(objectMapper.writeValueAsString(createProductDto(INVALID_PRODUCT)))
                 )
                 .andExpect(status().isBadRequest());
 
@@ -244,16 +230,12 @@ public class ProductControllerTest {
 
     @Test
     public void updateProduct_WithNonExistingId_ReturnsNotFound() throws Exception {
-        final Product product = Product.builder()
-                .name("Product Name").description("Description Description").value(BigDecimal.valueOf(10.0))
-                .build();
-
         doThrow(EntityNotFoundException.class).when(productService).update(any(Product.class), eq(1L));
 
         mockMvc.perform(
                         put("/products/{id}", 1L)
                                 .contentType("application/json")
-                                .content(objectMapper.writeValueAsString(createProductDto(product)))
+                                .content(objectMapper.writeValueAsString(createProductDto(VALID_PRODUCT)))
                 )
                 .andExpect(status().isNotFound());
 
