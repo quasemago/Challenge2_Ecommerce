@@ -16,6 +16,8 @@ Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de n
 
 ## Tecnologias utilizadas
 - Java JDK 17
+
+### Dependências
 - Spring Boot 3
 - Spring Boot Test (inclui o JUnit 5 e Mockito)
 - Spring Web e Spring Web Flux
@@ -32,7 +34,8 @@ Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de n
 # Produto
 O domínio **Produto** consiste em uma API REST que permite que os usuários criem, leiam, atualizem e excluam produtos.
 
-Ademais, o domínio possui as seguintes regras de negócio:
+## Regras de negócio
+O domínio **Produto** possui as seguintes regras de negócio:
 - O nome do produto deve ser único;
 - A descrição do produto deve ter no mínimo 10 caracteres;
 - O valor do produto deve ser um número positivo.
@@ -46,51 +49,113 @@ O domínio possui a seguinte estrutura de banco de dados:
 
 ## Endpoints
 A API disponibiliza endpoints REST para interação. Os principais são:
+- `POST /products`: Cria um novo produto.
 - `GET /products`: Recupera uma lista de todos os produtos cadastrados.
 - `GET /products/:id`: Recupera as informações de um produto específico.
-- `POST /products`: Cria um novo produto.
 - `PUT /products/:id`: Atualiza as informações de um produto existente.
 - `DELETE /products/:id`: Deleta um produto existente.
 
-**DTOs (Objetos de Transferência de Dados):**
-Para interações com a API, utilize objetos de transferência de dados (DTOs).
-- `ProductCreateDto`: Usado para criar novos produtos, fornecendo nome, descrição e preço.
-- `ProductResponseDto`: Representa a resposta contendo as informações de um produto para leitura.
+### Payloads
 
-**Payloads:**
+Ademais, a API possui os seguintes payloads para interação:
+- `ProductCreate`: Payload utilizado para criação e atualização de um produto.
+    ```json
+    {
+        "name": "Product name",
+        "description": "Product description",
+        "value": 10.5
+    }
+    ```
+- `ProductResponse`: Payload utilizado para retorno de informações de um produto.
+    ```json
+    {
+      "id": 1,
+      "name": "Product name",
+      "description": "Product description",
+      "value": 10.5
+    }
+    ```
 
-- Para criar um novo produto:
+### Exemplos de requisições
+**Para criar um novo produto:**
+- Requisição:
+    ```json
+    POST /products
+    {
+      "name": "Nome do Produto",
+      "description": "Descrição do Produto",
+      "value": 29.99
+    }
+    ```
+- Resposta (Status 201 - Created):
+    ```json
+    {
+      "id": 1,
+      "name": "Nome do Produto",
+      "description": "Descrição do Produto",
+      "value": 29.99
+    }
+    ```
+**Para recuperar uma lista de todos os produtos cadastrados:**
+- Requisição:
+    ```json
+    GET /products
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    [
+      {
+        "id": 1,
+        "name": "Nome do Produto 1",
+        "description": "Descrição do Produto 1",
+        "value": 29.99
+      },
+      // Outros produtos...
+    ]
+    ```
 
-```json
-POST /products
-{
-  "name": "Nome do Produto",
-  "description": "Descrição do Produto",
-  "value": 29.99
-}
-```
+**Para recuperar informações de um produto específico:**
+- Requisição:
+    ```json
+    GET /products/5
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    {
+      "id": 5,
+      "name": "Nome do Produto",
+      "description": "Descrição do Produto",
+      "value": 29.99
+    }
+    ```
 
-- Para obter detalhes de um produto:
+**Para atualizar um produto existente:**
+- Requisição:
+    ```json
+    PUT /products/15
+    {
+      "name": "Novo Nome",
+      "description": "Nova Descrição",
+      "value": 39.99
+    }
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    {
+      "id": 15,
+      "name": "Novo Nome",
+      "description": "Nova Descrição",
+      "value": 39.99
+    }
+    ```
 
-```json
-GET /products/:id
- ```
-
-- Para atualizar um produto existente:
-
-```json
-PUT /products/:id
-{
-"name": "Novo Nome",
-"description": "Nova Descrição",
-"value": 39.99
-}
-```
-
-- Para deletar um produto:
-```json
-DELETE /products/:id
- ```
+**Para deletar um produto existente:**
+- Requisição:
+    ```json
+    DELETE /products/15
+    ```
+- Resposta (Status 204 - No Content):
+  - Nesse caso, não há corpo de resposta, pois a resposta é sem conteúdo.
 ---
 # Como executar o projeto
 TODO
