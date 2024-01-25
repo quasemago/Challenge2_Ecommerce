@@ -10,12 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -49,7 +47,7 @@ public class ProductServiceTest {
         assertThat(sut).isEqualTo(PRODUCT_1);
     }
     @Test
-    public void getProductById_WithUnexistingId_EntityNotFoundException(){
+    public void getProductById_WithUnexistingId_ThrowsEntityNotFoundException(){
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
        assertThatThrownBy(() ->  productService.getProductById(1L)).isInstanceOf(EntityNotFoundException.class);
 
@@ -73,6 +71,28 @@ public class ProductServiceTest {
         assertThat(sut).isEmpty();
         verify(productRepository).findAll();
 
+    }
+    @Test
+    public void deleteProduct_WithExistingId_doesNotThrowAnyException(){
+        Long productId = 1L;
+        when(productRepository.existsById(productId)).thenReturn(true);
+        assertThatCode(() -> productService.deleteProduct(productId)).doesNotThrowAnyException();
+        verify(productRepository).existsById(productId);
+        verify(productRepository).deleteById(productId);
+
+    }
+    @Test
+    public void deleteProduct_ProductDoesNotExist_ThrowsEntityNotFoundException() {
+
+        Long productId = 1L;
+        when(productRepository.existsById(productId)).thenReturn(false);
+
+        assertThatThrownBy(() -> productService.deleteProduct(productId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Não existe o produto com o Id: " + productId);
+
+        verify(productRepository).existsById(productId);
+        verify(productRepository, never()).deleteById(productId);
     }
 
 
