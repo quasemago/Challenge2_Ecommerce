@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@Tag(name = "Products API", description = "Contém as operações relativas aos recursos de interação com o domínio produtos.")
+@Tag(name = "Products API", description = "Contém as operações relativas ao domínio produtos. " +
+        "Permite que os usuários criem, leiam, atualizem e excluam produtos")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/products")
