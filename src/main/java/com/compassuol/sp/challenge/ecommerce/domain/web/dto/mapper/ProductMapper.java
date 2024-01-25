@@ -7,15 +7,17 @@ import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductMapper {
-    public static Product toProduct (ProductCreateDto dto){
+    public static Product toProduct(ProductCreateDto dto){
         return new ModelMapper().map(dto, Product.class);
     }
 
-    public static ProductResponseDto toDto (Product product){
+    public static ProductResponseDto toDto(Product product){
         return new ModelMapper().map(product, ProductResponseDto.class);
     }
 
@@ -23,7 +25,5 @@ public class ProductMapper {
         return products.stream()
             .map(ProductMapper::toDto)
             .collect(Collectors.toList());
-        
     }
-    
 }
