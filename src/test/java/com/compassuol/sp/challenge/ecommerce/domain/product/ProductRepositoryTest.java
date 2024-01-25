@@ -13,8 +13,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -66,11 +68,11 @@ public class ProductRepositoryTest {
 
     @Test
     public void createProduct_WithExistingName_ThrowsException() {
-        final Product planet = testEntityManager.persistFlushFind(VALID_PRODUCT);
-        testEntityManager.detach(planet);
-        planet.setId(null);
+        final Product product = testEntityManager.persistFlushFind(VALID_PRODUCT);
+        testEntityManager.detach(product);
+        product.setId(null);
 
-        assertThatThrownBy(() -> productRepository.save(planet))
+        assertThatThrownBy(() -> productRepository.save(product))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -93,11 +95,27 @@ public class ProductRepositoryTest {
 
     @Test
     public void deleteProduct_WithExistingId_DeleteProductFromDataBase() {
-        Product planet = testEntityManager.persistFlushFind(VALID_PRODUCT);
+        Product product = testEntityManager.persistFlushFind(VALID_PRODUCT);
 
-        productRepository.deleteById(planet.getId());
+        productRepository.deleteById(product.getId());
 
-        Product removedPlanet = testEntityManager.find(Product.class, planet.getId());
-        assertThat(removedPlanet).isNull();
+        Product removedProduct = testEntityManager.find(Product.class, product.getId());
+        assertThat(removedProduct).isNull();
+    }
+
+    @Sql("/sql/products/insert_products.sql")
+    @Test
+    public void getAllProducts_ReturnsProductsList() {
+        final List<Product> productList = productRepository.findAll();
+
+        assertThat(productList).isNotEmpty();
+        assertThat(productList).hasSize(3);
+        assertThat(productList.get(0).getName()).isEqualTo("Apple");
+    }
+
+    @Test
+    public void getAllProducts_ReturnsEmptyList() {
+        final List<Product> productList = productRepository.findAll();
+        assertThat(productList).isEmpty();
     }
 }
