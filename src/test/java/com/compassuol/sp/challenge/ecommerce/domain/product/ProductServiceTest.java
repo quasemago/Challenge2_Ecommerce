@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,9 +44,9 @@ public class ProductServiceTest {
 
     @Test
     public void getProductById_WithExistingId_ReturnsProduct(){
-        when(productRepository.findById(1L)).thenReturn(Optional.of(PRODUCT_WITH_ID));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(PRODUCT_1));
         Product sut = productService.getProductById(1L);
-        assertThat(sut).isEqualTo(PRODUCT_WITH_ID);
+        assertThat(sut).isEqualTo(PRODUCT_1);
     }
     @Test
     public void getProductById_WithUnexistingId_EntityNotFoundException(){
@@ -53,5 +54,26 @@ public class ProductServiceTest {
        assertThatThrownBy(() ->  productService.getProductById(1L)).isInstanceOf(EntityNotFoundException.class);
 
     }
+
+    @Test
+    public void getAllProducts_ReturnAllProducts(){
+        List<Product> mockProducts = Arrays.asList(PRODUCT_1, PRODUCT_2);
+        when(productRepository.findAll()).thenReturn(mockProducts);
+        List<Product> sut = productService.getAllProducts();
+        assertThat(sut).isNotNull();
+        assertThat(sut).hasSize(2);
+        assertThat(sut).containsExactlyInAnyOrder(PRODUCT_1, PRODUCT_2);
+        verify(productRepository).findAll();
+
+    }
+    @Test
+    public void getAllProducts_ReturnNoProducts(){
+        when(productRepository.findAll()).thenReturn(Collections.emptyList());
+        List<Product> sut = productService.getAllProducts();
+        assertThat(sut).isEmpty();
+        verify(productRepository).findAll();
+
+    }
+
 
 }
