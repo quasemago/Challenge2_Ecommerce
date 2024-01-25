@@ -12,7 +12,6 @@ Ademais, posteriormente para testes de únidades e integração, foi utilizado o
   - [Regras de negócio gerais](#regras-de-negócio-gerais)
   - [Tecnologias utilizadas](#tecnologias-utilizadas)
     - [Dependências](#dependências)
-  - [Sumário](#sumário)
   - [Domínio Produto](#domínio-produto)
     - [Regras de negócio](#regras-de-negócio)
     - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
@@ -208,7 +207,40 @@ Exemplo de erro ao tentar cadastrar um produto com campos mal formatados ou inco
 
 ---
 # Como executar o projeto
-TODO
+O projeto foi desenvolvido utilizando a linguagem de programação Java, utilizando o Java Development Kit (JDK) na versão 17.
+Portanto, para executar o projeto, é necessário ter o JDK 17 instalado na máquina, que pode ser baixado através do link: https://www.oracle.com/java/technologies/downloads/#java17
+
+Com o projeto já em execução, basta acessar o endereço ``http://localhost:8080/docs-ecommerce-api.html`` para acessar a documentação da API por meio do Swagger.
+
+### Pré-configurações
+Antes de executar o projeto, é necessário configurar o banco de dados MySQL, para que o projeto possa se conectar ao mesmo.
+
+Para isso, basta acessar o arquivo ``application.properties`` localizado na pasta ``src/main/resources`` e alterar as seguintes propriedades:
+- ``spring.datasource.url``: Alterar o valor da propriedade para o endereço do banco de dados MySQL.
+- ``spring.datasource.username``: Alterar o valor da propriedade para o usuário do banco de dados MySQL.
+- ``spring.datasource.password``: Alterar o valor da propriedade para a senha do usuário do banco de dados MySQL.
+
+**Observação:** Alternativamente, é possível alterar essas configurações diretamente utilizando variaveis de ambiente, sendo elas:
+- ``MYSQL_HOST``
+- ``MYSQL_USERNAME``
+- ``MYSQL_PASSWORD``
+
+Dessa forma, não é necessário alterar o arquivo ``application.properties`` manualmente e nem recompilar o projeto.
+
+## Utilizando uma IDE (IntelliJ IDEA)
+Após instalar o JDK 17, basta abrir o projeto em uma IDE de sua preferência com suporte ao _apache maven_,
+como, por exemplo, o IntelliJ IDEA, para que todas as dependências sejam baixadas.
+
+Com o projeto aberto na IDE, basta executar a classe ``ECommerceApplication`` que contem o método ``main``, sendo a localização no pacote ``com.compassuol.sp.challenge.ecommerce``.
+
+## Utilizando o terminal
+Para executar o projeto diretamente via terminal, além do JDK 17, é necessário ter o _apache maven_ instalado na máquina, que pode ser baixado através do link: https://maven.apache.org/download.cgi
+
+Após tudo instalado, basta abrir o terminal na pasta raiz do projeto, e executar o comando ``mvn clean install`` para que todas as dependências sejam baixadas. Após isso execute o comando ``mvn clean package`` para compilar nosso projeto.
+
+Após a execução dos comandos acima, observe que será criado uma pasta chamada ``target`` na raiz do projeto, essa pasta contem o nosso projeto compilado, sendo nomeado de ``e-commerce-1.0-SNAPSHOT.jar``. Após entrar na pasta, basta executar o arquivo compilado do projeto utilizando o java.
+
+Para executar o projeto, basta executar o comando ``java -jar e-commerce-1.0-SNAPSHOT.jar``.
 
 ---
 # Conclusão
