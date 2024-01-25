@@ -1,6 +1,7 @@
 
 package com.compassuol.sp.challenge.ecommerce.domain.product;
 
+import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.repository.ProductRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -45,6 +47,16 @@ public class ProductServiceTest {
         assertThatThrownBy(() -> productService.create(INVALID_PRODUCT)).isInstanceOf(RuntimeException.class);
         verify(productRepository, times(1)).save(INVALID_PRODUCT);
     }
+
+    @Test
+    public void createProduct_WithDuplicateProductName_ThrowsUniqueProductViolationException(){
+        when(productRepository.save(VALID_PRODUCT)).thenThrow(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> productService.create(VALID_PRODUCT))
+                .isInstanceOf(UniqueProductViolationException.class)
+                .hasMessage("Já existe um produto cadastrado com esse nome.");
+        verify(productRepository).save(VALID_PRODUCT);
+    }
+
 
     @Test
     public void getProductById_WithExistingId_ReturnsProduct() {
