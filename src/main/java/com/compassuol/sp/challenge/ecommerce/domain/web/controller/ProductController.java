@@ -105,7 +105,11 @@ public class ProductController {
         return ResponseEntity.ok(ProductMapper.toDto(updatedProduct));
     }
 
-    @Operation(summary = "Deletar produto pelo ID", description = "Recurso para deletar um produto pelo ID.",
+    @Operation(summary = "Deletar um produto existente.", description = "Recurso para deletar um produto existente do banco de dados através do Id.",
+            parameters = {
+                    @Parameter(name = "id", description = "Identificador (Id) do produto no banco de dados.",
+                            in = ParameterIn.PATH, required = true),
+            },
             responses = {
                     @ApiResponse(responseCode = "204", description = "Produto deletado com sucesso"),
                     @ApiResponse(responseCode = "404", description = "Produto não encontrado",
