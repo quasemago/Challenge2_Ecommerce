@@ -244,4 +244,13 @@ Para executar o projeto, basta executar o comando ``java -jar e-commerce-1.0-SNA
 
 ---
 # Conclusão
-TODO
+O 2º SpringBoot Challenge representou uma oportunidade enriquecedora para a equipe CoffeWithSpring aplicar nossos conhecimentos adquiridos durante o curso do estágio na Compass UOL. Em conjunto, desenvolvemos uma API REST para um e-commerce, dividindo tarefas e colaborando de forma eficaz.
+
+Ao utilizar tecnologias como Spring Boot, Swagger e JUnit e Mockito, conseguimos criar uma API robusta e bem documentada, seguindo as melhores práticas de desenvolvimento. Cada membro da equipe desempenhou um papel importante, contribuindo com suas habilidades e experiências para o sucesso do projeto.
+
+Esta experiência não apenas fortaleceu nossas habilidades técnicas em desenvolvimento, mas também melhorou nossa capacidade de trabalhar em equipe e resolver problemas de forma colaborativa. Estamos orgulhosos do trabalho realizado e ansiosos para aplicar esses aprendizados em futuros desafios.
+
+Agradecemos à Compass UOL pela oportunidade e estamos comprometidos em continuar crescendo e aprendendo juntos como equipe.
+
+Atenciosamente,
+Equipe CoffeWithSpring
