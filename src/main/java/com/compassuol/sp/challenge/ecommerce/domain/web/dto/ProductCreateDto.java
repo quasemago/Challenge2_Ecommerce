@@ -11,8 +11,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class ProductCreateDto {
     @NotBlank(message = "O nome do produto não pode estar em branco.")
     private String name;

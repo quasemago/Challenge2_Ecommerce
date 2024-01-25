@@ -1,10 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.domain.web.exception;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -13,11 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
 public class ErrorMessage {
-    private int code;
-    private String status;
-    private String message;
+    private final int code;
+    private final String status;
+    private final String message;
     private final List<FieldErrorDetails> details = new ArrayList<>();
 
     public ErrorMessage(HttpStatus status, String message) {
@@ -34,7 +30,6 @@ public class ErrorMessage {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor
     private static class FieldErrorDetails {
         private String field;
