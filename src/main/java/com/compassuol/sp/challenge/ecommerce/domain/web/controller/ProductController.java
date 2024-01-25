@@ -28,7 +28,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @Operation(summary = "Lista todos os produtos.", description = "Recurso para listar todos os produtos.",
+    @Operation(summary = "Lista todos os produtos.", description = "Recurso para recuperar uma lista de todos os produtos cadastrados.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Lista de produtos",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
