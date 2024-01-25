@@ -33,11 +33,14 @@ public class ProductServiceTest {
         when(productRepository.save(VALID_PRODUCT)).thenReturn(VALID_PRODUCT);
         Product sut = productService.create(VALID_PRODUCT);
         assertThat(sut).isEqualTo(VALID_PRODUCT);
+        verify(productRepository).save(VALID_PRODUCT);
     }
     @Test
     public void create_WithInvalidData_ThrowsException(){
         when(productRepository.save(INVALID_PRODUCT)).thenThrow(RuntimeException.class);
         assertThatThrownBy(() -> productService.create(INVALID_PRODUCT)).isInstanceOf(RuntimeException.class);
+        verify(productRepository).save(INVALID_PRODUCT);
+
 
     }
 
@@ -46,11 +49,13 @@ public class ProductServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(PRODUCT_1));
         Product sut = productService.getProductById(1L);
         assertThat(sut).isEqualTo(PRODUCT_1);
+        verify(productRepository).findById(1L);
     }
     @Test
     public void getProductById_WithUnexistingId_ThrowsEntityNotFoundException(){
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
-       assertThatThrownBy(() ->  productService.getProductById(1L)).isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() ->  productService.getProductById(1L)).isInstanceOf(EntityNotFoundException.class);
+        verify(productRepository).findById(1L);
 
     }
 
