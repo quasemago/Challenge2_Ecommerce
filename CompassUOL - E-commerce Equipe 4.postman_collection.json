@@ -76,7 +76,7 @@
 		{
 			"name": "Product - Update",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -88,7 +88,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/products/4",
+					"raw": "http://localhost:8080/products/9",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -96,7 +96,7 @@
 					"port": "8080",
 					"path": [
 						"products",
-						"4"
+						"9"
 					]
 				}
 			},
