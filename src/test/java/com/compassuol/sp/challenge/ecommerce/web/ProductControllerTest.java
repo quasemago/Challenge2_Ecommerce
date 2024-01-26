@@ -227,7 +227,7 @@ public class ProductControllerTest {
         final ProductResponseDto responseBody = toResponseDto(VALID_PRODUCT);
 
         mockMvc.perform(
-                        put("/products/{id}", 1L)
+                        post("/products/{id}", 1L)
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(createProductDto(VALID_PRODUCT)))
                 )
@@ -244,7 +244,7 @@ public class ProductControllerTest {
     @Test
     public void updateProduct_WithInvalidData_ReturnsBadRequest() throws Exception {
         mockMvc.perform(
-                        put("/products/{id}", 1L)
+                        post("/products/{id}", 1L)
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(createProductDto(INVALID_PRODUCT)))
                 )
@@ -258,7 +258,7 @@ public class ProductControllerTest {
         doThrow(EntityNotFoundException.class).when(productService).update(any(Product.class), eq(1L));
 
         mockMvc.perform(
-                        put("/products/{id}", 1L)
+                        post("/products/{id}", 1L)
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(createProductDto(VALID_PRODUCT)))
                 )
