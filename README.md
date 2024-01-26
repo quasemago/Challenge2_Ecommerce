@@ -251,7 +251,7 @@ Para executar o projeto, basta executar o comando ``java -jar e-commerce-1.0-SNA
 Com o projeto já em execução, basta acessar o endereço ``http://localhost:8080/docs-ecommerce-api.html`` para acessar a documentação da API por meio do Swagger.
 
 ### Coleção do Postman
-Você tem pode exportar a coleção do aplicativo Postman para testar as requisições da API, que pode ser baixada em: [CompassUOL - E-commerce Equipe 4.postman_collection.json](CompassUOL%20-%20E-commerce%20Equipe%204.postman_collection.json)
+Você tem pode importar a coleção do aplicativo Postman para testar as requisições da API, que pode ser baixada em: [CompassUOL - E-commerce Equipe 4.postman_collection.json](CompassUOL%20-%20E-commerce%20Equipe%204.postman_collection.json)
 
 ---
 # Conclusão
