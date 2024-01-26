@@ -7,6 +7,9 @@ Cada domínio possui 5 (cinco) endpoints, e foram todos documentados utilizando 
 Para testes das implementações, foi utilizado inicialmente o aplicativo Postman, cobrindo assim os testes de requisições.
 Ademais, posteriormente para testes de únidades e integração, foi utilizado o JUnit 5 em conjunto com o Mockito.
 
+**Importante:**
+Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-projeto). Essa seção contem instruções e também a coleção do aplicativo **Postman** exportada para testes das requisições.
+
 ## Sumário
 - [Challenge 2 - E-commerce (CompassUOL)](#challenge-2---e-commerce-compassuol)
   - [Regras de negócio gerais](#regras-de-negócio-gerais)
@@ -20,6 +23,9 @@ Ademais, posteriormente para testes de únidades e integração, foi utilizado o
       - [Exemplos de requisições](#exemplos-de-requisições)
     - [Fluxo de erros](#fluxo-de-erros)
   - [Como executar o projeto](#como-executar-o-projeto)
+    - [Utilizando uma IDE (IntelliJ IDEA)](#utilizando-uma-ide-intellij-idea)
+    - [Utilizando o terminal](#utilizando-o-terminal)
+    - [Projeto em execução](#projeto-em-execução)
   - [Conclusão](#conclusão)
 
 ## Regras de negócio gerais
@@ -210,8 +216,6 @@ Exemplo de erro ao tentar cadastrar um produto com campos mal formatados ou inco
 O projeto foi desenvolvido utilizando a linguagem de programação Java, utilizando o Java Development Kit (JDK) na versão 17.
 Portanto, para executar o projeto, é necessário ter o JDK 17 instalado na máquina, que pode ser baixado através do link: https://www.oracle.com/java/technologies/downloads/#java17
 
-Com o projeto já em execução, basta acessar o endereço ``http://localhost:8080/docs-ecommerce-api.html`` para acessar a documentação da API por meio do Swagger.
-
 ### Pré-configurações
 Antes de executar o projeto, é necessário configurar o banco de dados MySQL, para que o projeto possa se conectar ao mesmo.
 
@@ -241,6 +245,11 @@ Após tudo instalado, basta abrir o terminal na pasta raiz do projeto, e executa
 Após a execução dos comandos acima, observe que será criado uma pasta chamada ``target`` na raiz do projeto, essa pasta contem o nosso projeto compilado, sendo nomeado de ``e-commerce-1.0-SNAPSHOT.jar``. Após entrar na pasta, basta executar o arquivo compilado do projeto utilizando o java.
 
 Para executar o projeto, basta executar o comando ``java -jar e-commerce-1.0-SNAPSHOT.jar``.
+
+## Projeto em execução
+Com o projeto já em execução, basta acessar o endereço ``http://localhost:8080/docs-ecommerce-api.html`` para acessar a documentação da API por meio do Swagger.
+
+Você tem pode exportar a coleção do aplicativo Postman para testar as requisições da API, que pode ser baixada em: [CompassUOL - E-commerce Equipe 4.postman_collection.json](CompassUOL%20-%20E-commerce%20Equipe%204.postman_collection.json)
 
 ---
 # Conclusão
