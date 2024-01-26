@@ -8,7 +8,7 @@ Para testes das implementações, foi utilizado inicialmente o aplicativo Postma
 Ademais, posteriormente para testes de únidades e integração, foi utilizado o JUnit 5 em conjunto com o Mockito.
 
 **Importante:**
-Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-projeto). Essa seção contem instruções e também a coleção do aplicativo **Postman** exportada para testes das requisições.
+Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-projeto). Essa seção contem instruções e também a [Coleção do Postman](#coleção-do-postman) exportada para testes das requisições.
 
 ## Sumário
 - [Challenge 2 - E-commerce (CompassUOL)](#challenge-2---e-commerce-compassuol)
@@ -26,6 +26,7 @@ Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-pr
     - [Utilizando uma IDE (IntelliJ IDEA)](#utilizando-uma-ide-intellij-idea)
     - [Utilizando o terminal](#utilizando-o-terminal)
     - [Projeto em execução](#projeto-em-execução)
+      - [Coleção do Postman](#coleção-do-postman)
   - [Conclusão](#conclusão)
 
 ## Regras de negócio gerais
@@ -249,6 +250,7 @@ Para executar o projeto, basta executar o comando ``java -jar e-commerce-1.0-SNA
 ## Projeto em execução
 Com o projeto já em execução, basta acessar o endereço ``http://localhost:8080/docs-ecommerce-api.html`` para acessar a documentação da API por meio do Swagger.
 
+### Coleção do Postman
 Você tem pode exportar a coleção do aplicativo Postman para testar as requisições da API, que pode ser baixada em: [CompassUOL - E-commerce Equipe 4.postman_collection.json](CompassUOL%20-%20E-commerce%20Equipe%204.postman_collection.json)
 
 ---
