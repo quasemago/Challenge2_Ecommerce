@@ -1,6 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.domain.web.controller;
 
-import com.compassuol.sp.challenge.ecommerce.domain.product.service.OrderService;
+import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
