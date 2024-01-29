@@ -1,6 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.domain.web.controller;
 
-import com.compassuol.sp.challenge.ecommerce.domain.product.service.OrdersService;
+import com.compassuol.sp.challenge.ecommerce.domain.product.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/orders")
-public class OrdersController {
+public class OrderController {
 
-    private final OrdersService ordersService;
+    private final OrderService orderService;
 
     public ResponseEntity<Void> getAllOrders() {
         return null;
