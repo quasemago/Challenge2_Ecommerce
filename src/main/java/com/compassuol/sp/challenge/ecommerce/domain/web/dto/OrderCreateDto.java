@@ -16,7 +16,7 @@ public class OrderCreateDto {
     
     private Long id;
     private List<ProductResponseDTO> products;
-    private AddressDTO address;
+    private AddressDto address;
     private String paymentMethod;
     private BigDecimal subtotalValue;
     private BigDecimal discount;
