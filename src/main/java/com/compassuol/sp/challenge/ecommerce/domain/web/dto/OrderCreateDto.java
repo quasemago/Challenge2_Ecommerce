@@ -23,4 +23,5 @@ public class OrderCreateDto {
     private BigDecimal totalValue;
     private LocalDateTime createdDate;
     private String status;
+    
 }
