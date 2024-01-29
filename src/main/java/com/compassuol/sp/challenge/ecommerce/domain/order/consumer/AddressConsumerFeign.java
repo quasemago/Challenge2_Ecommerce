@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(value = "address-consumer", url = "https://viacep.com.br/ws")
-public interface AddressConsumerFeing {
+public interface AddressConsumerFeign {
     @GetMapping(value = "/{cep}/json")
     Address getAddressByCep(@PathVariable("cep") String cep);
 
