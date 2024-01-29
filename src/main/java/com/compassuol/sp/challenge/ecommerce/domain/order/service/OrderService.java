@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.domain.product.service;
+package com.compassuol.sp.challenge.ecommerce.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
