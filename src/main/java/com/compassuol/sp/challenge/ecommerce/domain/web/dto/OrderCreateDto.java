@@ -15,7 +15,7 @@ import java.util.List;
 public class OrderCreateDto {
     
     private Long id;
-    private List<ProductResponseDTO> products;
+    private List<ProductResponseDto> products;
     private AddressDto address;
     private String paymentMethod;
     private BigDecimal subtotalValue;

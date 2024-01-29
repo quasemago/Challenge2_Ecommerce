@@ -9,6 +9,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 public class AddressDto {
+
     private String street;
     private int number;
     private String complement;
