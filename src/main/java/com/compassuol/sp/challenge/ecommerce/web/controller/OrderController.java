@@ -68,6 +68,16 @@ public class OrderController {
         return ResponseEntity.ok(OrderMapper.toDto(order));
     }
 
+    @Operation(summary = "Criar um novo pedido.", description = "Recurso para criar um novo pedido.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Pedido criado com sucesso.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponseDto.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+            }
+    )
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderCreateDto createDto) {
         final Order order = orderService.create(createDto);

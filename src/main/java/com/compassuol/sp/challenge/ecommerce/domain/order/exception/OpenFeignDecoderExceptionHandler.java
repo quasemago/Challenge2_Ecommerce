@@ -9,13 +9,10 @@ public class OpenFeignDecoderExceptionHandler implements ErrorDecoder {
     @Override
     public Exception decode(String methodKey, Response response) {
 
-        switch (response.status()){
-            case 400:
-                return new OpenFeignBadRequestException("Requisição inválida.");
-            case 404:
-                return new OpenFeignNotFoundException("Requisição não encontrada.");
-            default:
-                return new Exception("Ocorreu um erro inesperado.");
-        }
+        return switch (response.status()) {
+            case 400 -> new OpenFeignBadRequestException("Não foi possível processar o CEP informado.");
+            case 404 -> new OpenFeignNotFoundException("CEP informado não encontrado.");
+            default -> new Exception("Ocorreu um erro inesperado.");
+        };
     }
 }
