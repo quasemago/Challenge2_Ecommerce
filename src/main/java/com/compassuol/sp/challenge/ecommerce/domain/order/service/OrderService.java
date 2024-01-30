@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,5 +77,13 @@ public class OrderService {
         return orderRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Nenhum pedido foi encontrado com este Id: " + id)
         );
+    }
+
+    public List<Order> getAllByStatus(OrderStatus status) {
+        if (status == null) {
+            return orderRepository.findAllOrderByCreatedDateDesc();
+        } else {
+            return orderRepository.findAllByStatusOrderByCreatedDateDesc(status);
+        }
     }
 }
