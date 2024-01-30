@@ -1,5 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.web.exception;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +40,22 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(OpenFeignBadRequestException.class)
+    public ResponseEntity<ErrorMessage> handleOpenFeignBadRequestException(OpenFeignBadRequestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(OpenFeignNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleOpenFeignNotFoundException(OpenFeignNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
