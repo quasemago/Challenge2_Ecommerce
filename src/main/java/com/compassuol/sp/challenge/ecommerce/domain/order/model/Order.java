@@ -22,34 +22,29 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "order_products",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product> products;
-    @ManyToOne
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderProduct> products;
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)
-    private PaymentMethod payment_method;
+    private PaymentMethod paymentMethod;
     @Column(name = "subtotal_value", nullable = false, columnDefinition = "DECIMAL(10,2)")
-    private BigDecimal subtotal_value;
+    private BigDecimal subtotalValue;
     @Column(name = "discount", nullable = false, columnDefinition = "DECIMAL(10,2)")
     private BigDecimal discount;
     @Column(name = "total_value", nullable = false, columnDefinition = "DECIMAL(10,2)")
-    private BigDecimal total_value;
+    private BigDecimal totalValue;
     @Column(name = "created_date", nullable = false)
-    private LocalDateTime created_date;
+    private LocalDateTime createdDate;
     @Column(name = "update_date")
-    private LocalDateTime update_date;
+    private LocalDateTime updateDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
     @Column(name = "cancel_reason", length = 256)
-    private String cancel_reason;
+    private String cancelReason;
     @Column(name = "cancel_date")
-    private LocalDateTime cancel_date;
+    private LocalDateTime cancelDate;
 }
