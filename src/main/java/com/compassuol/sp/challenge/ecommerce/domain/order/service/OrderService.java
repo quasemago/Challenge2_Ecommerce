@@ -11,6 +11,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductServi
 import com.compassuol.sp.challenge.ecommerce.web.dto.AddressCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,5 +69,12 @@ public class OrderService {
         order.setStatus(OrderStatus.CONFIRMED);
 
         return orderRepository.save(order);
+    }
+
+    @Transactional(readOnly = true)
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Nenhum pedido foi encontrado com este Id: " + id)
+        );
     }
 }
