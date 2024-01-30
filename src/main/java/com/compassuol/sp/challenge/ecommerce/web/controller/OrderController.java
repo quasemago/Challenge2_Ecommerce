@@ -11,6 +11,7 @@ import com.compassuol.sp.challenge.ecommerce.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,6 +33,19 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @Operation(summary = "Recuperar todos os pedidos existentes.", description = "Recurso para recuperar todos os pedidos existentes no banco de dados. " +
+            "Requisição pode ser filtrada por status do pedido.",
+            parameters = {
+                    @Parameter(name = "status", description = "Status do pedido a ser filtrado.",
+                            in = ParameterIn.QUERY, schema = @Schema(implementation = OrderStatus.class))
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso",
+                            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderResponseDto.class)))),
+                    @ApiResponse(responseCode = "204", description = "Nenhum pedido encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrders(@RequestParam(required = false) OrderStatus status) {
         final List<OrderResponseDto> orders = OrderMapper.toDtoList(orderService.getAllByStatus(status));
