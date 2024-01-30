@@ -41,9 +41,7 @@ public class OrderController {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso",
-                            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderResponseDto.class)))),
-                    @ApiResponse(responseCode = "204", description = "Nenhum pedido encontrado",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderResponseDto.class))))
             }
     )
     @GetMapping
