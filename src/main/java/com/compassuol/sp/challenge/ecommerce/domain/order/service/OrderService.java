@@ -3,6 +3,7 @@ package com.compassuol.sp.challenge.ecommerce.domain.order.service;
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
@@ -38,6 +39,9 @@ public class OrderService {
 
     private Address createOrderAddress(AddressCreateDto addressDto) {
         final Address address = addressConsumerFeign.getAddressByCep(addressDto.getPostalCode());
+        if (address.getPostalCode() == null) {
+            throw new OpenFeignNotFoundException("Nenhum endereço foi encontrado com este CEP: " + addressDto.getPostalCode());
+        }
         address.setNumber(addressDto.getNumber());
         address.setComplement(addressDto.getComplement());
         return address;
