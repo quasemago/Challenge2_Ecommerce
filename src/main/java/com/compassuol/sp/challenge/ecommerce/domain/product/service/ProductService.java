@@ -18,7 +18,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public Product create(Product product) {
+    public Product createProduct(Product product) {
         try {
             return productRepository.save(product);
         } catch (DataIntegrityViolationException e) {
@@ -27,10 +27,8 @@ public class ProductService {
     }
 
     @Transactional
-    public Product update(Product product, Long id) {
-        Product existingProduct = productRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Não existe o produto com o Id: " + id)
-        );
+    public Product updateProduct(Product product, Long id) {
+        Product existingProduct = getProductById(id);
         existingProduct.setName(product.getName());
         existingProduct.setValue(product.getValue());
         existingProduct.setDescription(product.getDescription());
@@ -38,6 +36,7 @@ public class ProductService {
 
     }
 
+    @Transactional
     public void deleteProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new EntityNotFoundException("Não existe o produto com o Id: " + productId);

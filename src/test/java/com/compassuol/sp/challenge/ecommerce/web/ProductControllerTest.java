@@ -64,7 +64,7 @@ public class ProductControllerTest {
 
     @Test
     public void createProduct_WithValidData_ReturnsProduct() throws Exception {
-        when(productService.create(any(Product.class))).thenReturn(VALID_PRODUCT);
+        when(productService.createProduct(any(Product.class))).thenReturn(VALID_PRODUCT);
         final ProductResponseDto responseBody = toResponseDto(VALID_PRODUCT);
 
         mockMvc.perform(
@@ -79,7 +79,7 @@ public class ProductControllerTest {
                         jsonPath("$.value").value(responseBody.getValue())
                 );
 
-        verify(productService, times(1)).create(any(Product.class));
+        verify(productService, times(1)).createProduct(any(Product.class));
     }
 
     @Test
@@ -91,12 +91,12 @@ public class ProductControllerTest {
                 )
                 .andExpect(status().isBadRequest());
 
-        verify(productService, never()).create(any(Product.class));
+        verify(productService, never()).createProduct(any(Product.class));
     }
 
     @Test
     public void createProduct_WithDuplicateName_ReturnsConflict() throws Exception {
-        when(productService.create(any(Product.class))).thenThrow(UniqueProductViolationException.class);
+        when(productService.createProduct(any(Product.class))).thenThrow(UniqueProductViolationException.class);
 
         mockMvc.perform(
                         post("/products")
@@ -105,7 +105,7 @@ public class ProductControllerTest {
                 )
                 .andExpect(status().isConflict());
 
-        verify(productService, times(1)).create(any(Product.class));
+        verify(productService, times(1)).createProduct(any(Product.class));
     }
 
     @Test
@@ -223,7 +223,7 @@ public class ProductControllerTest {
 
     @Test
     public void updateProduct_WithValidData_ReturnsProduct() throws Exception {
-        when(productService.update(any(Product.class), eq(1L))).thenReturn(VALID_PRODUCT);
+        when(productService.updateProduct(any(Product.class), eq(1L))).thenReturn(VALID_PRODUCT);
         final ProductResponseDto responseBody = toResponseDto(VALID_PRODUCT);
 
         mockMvc.perform(
@@ -238,7 +238,7 @@ public class ProductControllerTest {
                         jsonPath("$.value").value(responseBody.getValue())
                 );
 
-        verify(productService, times(1)).update(any(Product.class), eq(1L));
+        verify(productService, times(1)).updateProduct(any(Product.class), eq(1L));
     }
 
     @Test
@@ -250,12 +250,12 @@ public class ProductControllerTest {
                 )
                 .andExpect(status().isBadRequest());
 
-        verify(productService, never()).update(any(Product.class), eq(1L));
+        verify(productService, never()).updateProduct(any(Product.class), eq(1L));
     }
 
     @Test
     public void updateProduct_WithNonExistingId_ReturnsNotFound() throws Exception {
-        doThrow(EntityNotFoundException.class).when(productService).update(any(Product.class), eq(1L));
+        doThrow(EntityNotFoundException.class).when(productService).updateProduct(any(Product.class), eq(1L));
 
         mockMvc.perform(
                         put("/products/{id}", 1L)
@@ -264,6 +264,6 @@ public class ProductControllerTest {
                 )
                 .andExpect(status().isNotFound());
 
-        verify(productService, times(1)).update(any(Product.class), eq(1L));
+        verify(productService, times(1)).updateProduct(any(Product.class), eq(1L));
     }
 }
