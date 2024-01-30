@@ -1,9 +1,17 @@
 package com.compassuol.sp.challenge.ecommerce.web.controller;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.OrderCreateDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.OrderMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,8 +32,12 @@ public class OrderController {
         return null;
     }
 
-    public ResponseEntity<Void> createOrder() {
-        return null;
+    @PostMapping
+    public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderCreateDto createDto) {
+        final Order order = orderService.create(createDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(OrderMapper.toDto(order));
     }
 
     public ResponseEntity<Void> updateOrder() {

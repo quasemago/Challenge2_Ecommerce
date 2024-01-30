@@ -19,6 +19,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
+    @JsonIgnore
+    private Integer number;
     @JsonProperty("cep")
     private String postalCode;
     @JsonProperty("logradouro")
