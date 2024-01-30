@@ -2,9 +2,9 @@ package com.compassuol.sp.challenge.ecommerce.web.controller;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.OrderCreateDto;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.OrderResponseDto;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.OrderMapper;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.domain.web.dto;
+package com.compassuol.sp.challenge.ecommerce.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
