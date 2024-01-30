@@ -35,7 +35,7 @@ public class ProductServiceTest {
     @Test
     public void createProduct_WithValidData_ReturnsProduct() {
         when(productRepository.save(VALID_PRODUCT)).thenReturn(VALID_PRODUCT);
-        Product sut = productService.create(VALID_PRODUCT);
+        Product sut = productService.createProduct(VALID_PRODUCT);
         assertThat(sut).isNotNull();
         assertThat(sut).isEqualTo(VALID_PRODUCT);
         verify(productRepository, times(1)).save(VALID_PRODUCT);
@@ -44,14 +44,14 @@ public class ProductServiceTest {
     @Test
     public void createProduct_WithInvalidData_ThrowsException() {
         when(productRepository.save(INVALID_PRODUCT)).thenThrow(RuntimeException.class);
-        assertThatThrownBy(() -> productService.create(INVALID_PRODUCT)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> productService.createProduct(INVALID_PRODUCT)).isInstanceOf(RuntimeException.class);
         verify(productRepository, times(1)).save(INVALID_PRODUCT);
     }
 
     @Test
     public void createProduct_WithDuplicateProductName_ThrowsUniqueProductViolationException(){
         when(productRepository.save(VALID_PRODUCT)).thenThrow(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> productService.create(VALID_PRODUCT))
+        assertThatThrownBy(() -> productService.createProduct(VALID_PRODUCT))
                 .isInstanceOf(UniqueProductViolationException.class)
                 .hasMessage("Já existe um produto cadastrado com esse nome.");
         verify(productRepository).save(VALID_PRODUCT);
@@ -128,7 +128,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(EXISTING_PRODUCT));
         when(productRepository.save(EXISTING_PRODUCT)).thenReturn(UPDATED_PRODUCT);
 
-        Product sut = productService.update(UPDATED_PRODUCT, productId);
+        Product sut = productService.updateProduct(UPDATED_PRODUCT, productId);
 
         assertThat(sut).isNotNull();
         assertThat(sut).isEqualTo(UPDATED_PRODUCT);
@@ -145,7 +145,7 @@ public class ProductServiceTest {
         Long productId = 3L;
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> productService.update(UPDATED_PRODUCT, productId))
+        assertThatThrownBy(() -> productService.updateProduct(UPDATED_PRODUCT, productId))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("Não existe o produto com o Id: " + productId);
 
