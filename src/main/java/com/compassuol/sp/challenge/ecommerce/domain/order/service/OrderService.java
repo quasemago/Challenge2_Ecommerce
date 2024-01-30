@@ -1,12 +1,83 @@
 package com.compassuol.sp.challenge.ecommerce.domain.order.service;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
+import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
+import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
+import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
+import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.AddressCreateDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.OrderCreateDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductOrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-
     private final OrderRepository orderRepository;
+    private final ProductService productService;
+    private final AddressConsumerFeign addressConsumerFeign;
+
+    private OrderProduct createOrderProduct(Order order, ProductOrderDto productDto) {
+        final OrderProduct product = new OrderProduct();
+        product.setOrder(order);
+        product.setProduct(productService.getProductById(productDto.getProductId()));
+        product.setQuantity(productDto.getQuantity());
+        return product;
+    }
+
+    private Address createOrderAddress(AddressCreateDto addressDto) {
+        final Address address = addressConsumerFeign.getAddressByCep(addressDto.getPostalCode());
+        // Utiliza as informações do cliente.
+        address.setNumber(addressDto.getNumber());
+        address.setComplement(addressDto.getComplement());
+        return address;
+    }
+
+    @Transactional
+    public Order create(OrderCreateDto createDto) {
+        final Order order = new Order();
+
+        // Get products.
+        order.setProducts(createDto.getProducts().stream()
+                .map(x -> createOrderProduct(order, x))
+                .collect(Collectors.toList()));
+
+        // Get address.
+        order.setAddress(createOrderAddress(createDto.getAddress()));
+
+        // Get payment method.
+        order.setPaymentMethod(PaymentMethod.valueOf(createDto.getPaymentMethod()));
+
+        // Calculate subtotal.
+        final BigDecimal subtotal = order.getProducts().stream()
+                .map(product -> product.getProduct().getValue().multiply(BigDecimal.valueOf(product.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.setSubtotalValue(subtotal);
+
+        // If the payment method is PIX, apply 5% discount.
+        if (createDto.getPaymentMethod().equals(PaymentMethod.PIX.name())) {
+            order.setDiscount(subtotal.multiply(BigDecimal.valueOf(0.05)));
+        } else {
+            order.setDiscount(BigDecimal.ZERO);
+        }
+
+        order.setTotalValue(subtotal.subtract(order.getDiscount()));
+
+        // Set the order creation date.
+        order.setCreatedDate(LocalDateTime.now());
+
+        // Set the order status.
+        order.setStatus(OrderStatus.CONFIRMED);
+
+        return orderRepository.save(order);
+    }
 }
