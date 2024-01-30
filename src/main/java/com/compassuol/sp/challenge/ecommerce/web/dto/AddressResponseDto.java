@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class AddressResponseDto {
-    private Integer number;
-    private String postalCode;
     private String street;
+    private Integer number;
     private String complement;
     private String city;
     private String state;
+    private String postalCode;
 }
