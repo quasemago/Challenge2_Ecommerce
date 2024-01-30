@@ -1,8 +1,8 @@
-package com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper;
+package com.compassuol.sp.challenge.ecommerce.web.dto.mapper;
 
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.ProductCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.ProductResponseDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
