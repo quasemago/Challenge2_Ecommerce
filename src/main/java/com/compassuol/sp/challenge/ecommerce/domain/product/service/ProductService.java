@@ -3,7 +3,6 @@ package com.compassuol.sp.challenge.ecommerce.domain.product.service;
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.repository.ProductRepository;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
