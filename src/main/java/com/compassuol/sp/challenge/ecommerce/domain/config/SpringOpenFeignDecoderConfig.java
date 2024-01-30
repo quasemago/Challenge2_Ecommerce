@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.config;
+package com.compassuol.sp.challenge.ecommerce.domain.config;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignDecoderExceptionHandler;
 import feign.codec.ErrorDecoder;

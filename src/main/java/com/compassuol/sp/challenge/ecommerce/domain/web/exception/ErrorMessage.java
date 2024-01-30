@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.web.exception;
+package com.compassuol.sp.challenge.ecommerce.domain.web.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

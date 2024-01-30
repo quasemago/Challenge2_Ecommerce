@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.config;
+package com.compassuol.sp.challenge.ecommerce.domain.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;

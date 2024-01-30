@@ -1,11 +1,11 @@
-package com.compassuol.sp.challenge.ecommerce.web.controller;
+package com.compassuol.sp.challenge.ecommerce.domain.web.controller;
 
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
-import com.compassuol.sp.challenge.ecommerce.web.dto.ProductCreateDto;
-import com.compassuol.sp.challenge.ecommerce.web.dto.ProductResponseDto;
-import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.ProductMapper;
-import com.compassuol.sp.challenge.ecommerce.web.exception.ErrorMessage;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.ProductMapper;
+import com.compassuol.sp.challenge.ecommerce.domain.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

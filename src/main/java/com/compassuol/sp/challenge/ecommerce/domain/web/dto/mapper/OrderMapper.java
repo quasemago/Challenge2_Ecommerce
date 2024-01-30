@@ -1,7 +1,7 @@
-package com.compassuol.sp.challenge.ecommerce.web.dto.mapper;
+package com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
-import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.domain.web.dto.OrderResponseDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;

@@ -48,7 +48,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
-    @Column(name = "cancel_reason", length = 600)
+    @Column(name = "cancel_reason", length = 256)
     private String cancel_reason;
     @Column(name = "cancel_date")
     private LocalDateTime cancel_date;

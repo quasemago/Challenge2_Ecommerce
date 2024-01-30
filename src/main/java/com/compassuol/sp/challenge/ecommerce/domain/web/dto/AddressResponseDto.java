@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.web.dto;
+package com.compassuol.sp.challenge.ecommerce.domain.web.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

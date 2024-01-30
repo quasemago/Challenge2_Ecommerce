@@ -28,7 +28,7 @@ public class Product implements Serializable {
     @Column(name = "price", nullable = false, columnDefinition = "DECIMAL(10,2)")
     @Positive
     private BigDecimal value;
-    @Column(name = "description", nullable = false, length = 600)
+    @Column(name = "description", nullable = false, length = 256)
     @Size(min = 10)
     private String description;
 }
