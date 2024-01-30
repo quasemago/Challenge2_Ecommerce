@@ -1,4 +1,4 @@
-package com.compassuol.sp.challenge.ecommerce.domain.web.controller;
+package com.compassuol.sp.challenge.ecommerce.web.controller;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;

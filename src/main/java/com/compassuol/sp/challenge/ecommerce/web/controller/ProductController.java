@@ -1,11 +1,11 @@
-package com.compassuol.sp.challenge.ecommerce.domain.web.controller;
+package com.compassuol.sp.challenge.ecommerce.web.controller;
 
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductCreateDto;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.ProductResponseDto;
-import com.compassuol.sp.challenge.ecommerce.domain.web.dto.mapper.ProductMapper;
-import com.compassuol.sp.challenge.ecommerce.domain.web.exception.ErrorMessage;
+import com.compassuol.sp.challenge.ecommerce.web.dto.ProductCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.ProductResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.ProductMapper;
+import com.compassuol.sp.challenge.ecommerce.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -76,7 +76,7 @@ public class ProductController {
     )
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductCreateDto dto) {
-        final Product product = productService.create(ProductMapper.toProduct(dto));
+        final Product product = productService.createProduct(ProductMapper.toProduct(dto));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ProductMapper.toDto(product));
@@ -101,7 +101,7 @@ public class ProductController {
     )
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductCreateDto dto) {
-        Product updatedProduct = productService.update(ProductMapper.toProduct(dto), id);
+        Product updatedProduct = productService.updateProduct(ProductMapper.toProduct(dto), id);
         return ResponseEntity.ok(ProductMapper.toDto(updatedProduct));
     }
 
