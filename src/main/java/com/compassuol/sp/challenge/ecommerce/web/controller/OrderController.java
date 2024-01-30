@@ -63,7 +63,10 @@ public class OrderController {
         return null;
     }
 
-    public ResponseEntity<Void> cancelOrder() {
-        return null;
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
+        try {
+            orderService.cancelOrder(id);
+        }
     }
 }
