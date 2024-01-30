@@ -1,5 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.web.controller;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
@@ -20,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Orders API", description = "Contém as operações relativas ao domínio pedidos. " +
         "Permite que os usuários criem, leiam, atualizem e cancelem pedidos")
 @RequiredArgsConstructor
@@ -29,8 +32,10 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    public ResponseEntity<Void> getAllOrders() {
-        return null;
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(@RequestParam(required = false) OrderStatus status) {
+        final List<OrderResponseDto> orders = OrderMapper.toDtoList(orderService.getAllByStatus(status));
+        return ResponseEntity.ok(orders);
     }
 
     @Operation(summary = "Recuperar informações de um pedido existente.", description = "Recurso para recuperar um pedido existente através do Id.",
