@@ -4,13 +4,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderCreateDto {
-    private List<ProductOrderDto> products;
-    private AddressCreateDto address;
-    private String paymentMethod;
+public class AddressCreateDto {
+    private Integer number;
+    private String complement;
+    private String postalCode;
 }
