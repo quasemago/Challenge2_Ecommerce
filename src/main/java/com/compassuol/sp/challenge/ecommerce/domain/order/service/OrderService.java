@@ -14,8 +14,12 @@ import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -83,11 +87,20 @@ public class OrderService {
         );
     }
 
+    @Transactional
     public List<Order> getAllByStatus(OrderStatus status) {
         if (status == null) {
             return orderRepository.findAllOrderByCreatedDateDesc();
         } else {
             return orderRepository.findAllByStatusOrderByCreatedDateDesc(status);
         }
+    }
+
+    @Transactional
+    public Order updateOrder(Order order, Long id) {
+        Order existingOrder = getOrderById(id);
+        existingOrder.setStatus(order.getStatus());
+        existingOrder.setUpdateDate(LocalDateTime.now());
+        return orderRepository.save(existingOrder);
     }
 }

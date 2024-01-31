@@ -5,6 +5,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderUpdateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductResponseDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
 import com.compassuol.sp.challenge.ecommerce.web.exception.ErrorMessage;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -86,9 +88,12 @@ public class OrderController {
                 .body(OrderMapper.toDto(order));
     }
 
-    public ResponseEntity<Void> updateOrder() {
-        return null;
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long id, @Valid @RequestBody OrderUpdateDto dto) {
+        Order updatedOrder = orderService.updateOrder(OrderMapper.UpdateDtoToOrder(dto), id);
+        return ResponseEntity.ok(OrderMapper.toDto(updatedOrder));
     }
+
 
     public ResponseEntity<Void> cancelOrder() {
         return null;
