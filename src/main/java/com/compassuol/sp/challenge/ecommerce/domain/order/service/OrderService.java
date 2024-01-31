@@ -3,6 +3,9 @@ package com.compassuol.sp.challenge.ecommerce.domain.order.service;
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
@@ -76,5 +80,32 @@ public class OrderService {
         return orderRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Nenhum pedido foi encontrado com este Id: " + id)
         );
+    }
+
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        Order order = getOrderById(orderId);
+
+        if (canCancelOrder(order)) {
+            order.setStatus(OrderStatus.CANCELED);
+            order.setCancelDate(LocalDateTime.now());
+            order.setCancelReason("Cancelado a pedido do cliente");
+
+            orderRepository.save(order);
+        } else {
+            throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado");
+        }
+    }
+
+
+    private boolean canCancelOrder(Order order) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime orderCreatedDate = order.getCreatedDate();
+
+        if (Duration.between(orderCreatedDate, now).toDays() > 90) {
+            order.setCancelReason("Pedido feito há mais de 90 dias");
+            return false;
+        }
+        return true;
     }
 }

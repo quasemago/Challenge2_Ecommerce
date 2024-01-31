@@ -1,5 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.web.controller;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
@@ -67,6 +69,11 @@ public class OrderController {
     public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
         try {
             orderService.cancelOrder(id);
+            return new ResponseEntity<>("Pedido cancelado com sucesso", HttpStatus.OK);
+        } catch (OrderNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (OrderCancellationNotAllowedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
