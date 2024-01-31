@@ -92,6 +92,7 @@ public class OrderService {
             return orderRepository.findAllByStatusOrderByCreatedDateDesc(status);
         }
     }
+    @Transactional
     public Order cancelOrder(Long orderId, String cancelReason) {
         Order order = getOrderById(orderId);
 
