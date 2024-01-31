@@ -4,6 +4,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsum
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,5 +104,34 @@ public class OrderService {
         existingOrder.setStatus(order.getStatus());
         existingOrder.setUpdateDate(LocalDateTime.now());
         return orderRepository.save(existingOrder);
+    }
+
+    @Transactional
+    public Order cancelOrder(Long orderId, String cancelReason) {
+        Order order = getOrderById(orderId);
+
+        if (order.getStatus().equals(OrderStatus.CANCELED)) {
+            throw new OrderCancellationNotAllowedException("Pedido já foi cancelado");
+        }
+
+        if (order.getStatus().equals(OrderStatus.SENT)) {
+            throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado, pois já foi enviado.");
+        }
+
+        if (!canCancelOrder(order)) {
+            throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado, pois já se passou 90 dias.");
+        }
+
+        order.setStatus(OrderStatus.CANCELED);
+        order.setCancelDate(LocalDateTime.now());
+        order.setCancelReason(cancelReason);
+        return orderRepository.save(order);
+    }
+
+    private boolean canCancelOrder(Order order) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime orderCreatedDate = order.getCreatedDate();
+
+        return Duration.between(orderCreatedDate, now).toDays() <= 90;
     }
 }

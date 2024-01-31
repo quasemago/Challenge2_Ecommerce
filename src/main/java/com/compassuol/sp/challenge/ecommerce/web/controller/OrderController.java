@@ -3,6 +3,7 @@ package com.compassuol.sp.challenge.ecommerce.web.controller;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCancelDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderUpdateDto;
@@ -111,7 +112,26 @@ public class OrderController {
     }
 
 
-    public ResponseEntity<Void> cancelOrder() {
-        return null;
+    @Operation(summary = "Cancelar um pedido.", description = " Recurso para cancelar um pedido feito com no máximo 90 dias, buscando por id de pedido.",
+            parameters = {
+                    @Parameter(name = "id", description = "Identificador (Id) de pedido no banco de dados.",
+                            in = ParameterIn.PATH, required = true),
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pedido cancelado com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrderResponseDto.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Pedido não encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            }
+    )
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<OrderResponseDto> cancelOrder(@PathVariable Long id, @Valid @RequestBody OrderCancelDto cancelDto) {
+        final Order order = orderService.cancelOrder(id, cancelDto.getCancelReason());
+        return ResponseEntity.ok(OrderMapper.toDto(order));
     }
 }
