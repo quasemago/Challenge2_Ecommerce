@@ -6,6 +6,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCancelDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderUpdateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductResponseDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
 import com.compassuol.sp.challenge.ecommerce.web.exception.ErrorMessage;
@@ -87,8 +88,27 @@ public class OrderController {
                 .body(OrderMapper.toDto(order));
     }
 
-    public ResponseEntity<Void> updateOrder() {
-        return null;
+    @Operation(summary = "Atualizar um pedido existente.", description = "Recurso para atualizar as informações de um pedido existente através do Id.",
+            parameters = {
+                    @Parameter(name = "id", description = "Identificador (Id) do pedido no banco de dados.",
+                            in = ParameterIn.PATH, required = true)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pedido atualizado com sucesso.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductResponseDto.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Campo(s) mal formatado(s)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Pedido não encontrado.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long id, @Valid @RequestBody OrderUpdateDto dto) {
+        Order updatedOrder = orderService.updateOrder(OrderMapper.UpdateDtoToOrder(dto), id);
+        return ResponseEntity.ok(OrderMapper.toDto(updatedOrder));
     }
 
 
@@ -114,5 +134,4 @@ public class OrderController {
         final Order order = orderService.cancelOrder(id, cancelDto.getCancelReason());
         return ResponseEntity.ok(OrderMapper.toDto(order));
     }
-
 }

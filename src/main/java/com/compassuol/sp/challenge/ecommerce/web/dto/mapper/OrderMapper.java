@@ -2,6 +2,7 @@ package com.compassuol.sp.challenge.ecommerce.web.dto.mapper;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderUpdateDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,4 +19,9 @@ public class OrderMapper {
     public static List<OrderResponseDto> toDtoList(List<Order> orders){
         return orders.stream().map(OrderMapper::toDto).collect(Collectors.toList());
     }
+    public static Order UpdateDtoToOrder (OrderUpdateDto updateDto) {
+
+        return new ModelMapper().map(updateDto, Order.class);
+    }
+
 }
