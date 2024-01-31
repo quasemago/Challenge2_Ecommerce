@@ -68,14 +68,6 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado."));
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Campo(s) mal formatado(s)."));
-    }
-
     @ExceptionHandler(OrderCancellationNotAllowedException.class)
     public ResponseEntity<ErrorMessage> handleOrderCancellationNotAllowedException(OrderCancellationNotAllowedException ex) {
         return ResponseEntity
