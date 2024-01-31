@@ -92,7 +92,6 @@ public class OrderService {
             return orderRepository.findAllByStatusOrderByCreatedDateDesc(status);
         }
     }
-    @Transactional
     public Order cancelOrder(Long orderId, String cancelReason) {
         Order order = getOrderById(orderId);
 
@@ -100,17 +99,18 @@ public class OrderService {
             throw new OrderCancellationNotAllowedException("Pedido já foi cancelado");
         }
 
-        if (canCancelOrder(order)) {
-            order.setStatus(OrderStatus.CANCELED);
-            order.setCancelDate(LocalDateTime.now());
-            order.setCancelReason(cancelReason);
+        if (order.getStatus().equals(OrderStatus.SENT)) {
+            throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado, pois já foi enviado.");
+        }
 
-            orderRepository.save(order);
-        } else {
+        if (!canCancelOrder(order)) {
             throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado, pois já se passou 90 dias.");
         }
 
-        return null;
+        order.setStatus(OrderStatus.CANCELED);
+        order.setCancelDate(LocalDateTime.now());
+        order.setCancelReason(cancelReason);
+        return orderRepository.save(order);
     }
 
     private boolean canCancelOrder(Order order) {
