@@ -13,6 +13,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderReposi
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
 import com.compassuol.sp.challenge.ecommerce.web.dto.AddressCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+
+import static com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
@@ -83,7 +86,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancelOrder(Long orderId) {
+    public OrderResponseDto cancelOrder(Long orderId) {
+
         Order order = getOrderById(orderId);
 
         if (canCancelOrder(order)) {
@@ -92,12 +96,11 @@ public class OrderService {
             order.setCancelReason("Cancelado a pedido do cliente");
 
             orderRepository.save(order);
+            return toDto(order);
         } else {
             throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado");
         }
     }
-
-
     private boolean canCancelOrder(Order order) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime orderCreatedDate = order.getCreatedDate();

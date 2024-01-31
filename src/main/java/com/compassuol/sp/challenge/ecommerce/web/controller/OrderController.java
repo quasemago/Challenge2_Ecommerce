@@ -77,12 +77,12 @@ public class OrderController {
                     )
             }
     )
-    
+
     @PostMapping("/{id}/cancel")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
+    public ResponseEntity<?> cancelOrder(@PathVariable Long id) {
         try {
-            orderService.cancelOrder(id);
-            return new ResponseEntity<>("Pedido cancelado com sucesso", HttpStatus.OK);
+            OrderResponseDto canceledOrderDto = orderService.cancelOrder(id);
+            return new ResponseEntity<>(canceledOrderDto, HttpStatus.OK);
         } catch (OrderNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (OrderCancellationNotAllowedException e) {
