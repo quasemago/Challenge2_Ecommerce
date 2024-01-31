@@ -65,6 +65,19 @@ public class OrderController {
         return null;
     }
 
+    @Operation(summary = "Deletar um produto existente.", description = "Recurso para deletar um produto existente do banco de dados através do Id.",
+            parameters = {
+                    @Parameter(name = "id", description = "Identificador (Id) do produto no banco de dados.",
+                            in = ParameterIn.PATH, required = true),
+            },
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Produto deletado com sucesso"),
+                    @ApiResponse(responseCode = "404", description = "Produto não encontrado",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            }
+    )
+    
     @PostMapping("/{id}/cancel")
     public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
         try {
