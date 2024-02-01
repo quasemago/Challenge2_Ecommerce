@@ -7,6 +7,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.web.dto.AddressCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCancelDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
 import lombok.AccessLevel;
@@ -91,4 +92,11 @@ public class OrderUtils {
                 .createdDate(LocalDateTime.now())
                 .build();
     }
+
+    public static OrderCancelDto generateCreateOrderCancelDto(String reason) {
+        final OrderCancelDto dto = new OrderCancelDto();
+        dto.setCancelReason(reason);
+        return dto;
+    }
+
 }

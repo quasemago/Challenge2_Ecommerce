@@ -1,24 +1,46 @@
 package com.compassuol.sp.challenge.ecommerce.domain.order;
 
+import com.compassuol.sp.challenge.ecommerce.common.OrderUtils;
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
+
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
+import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCancelDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CANCELED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
@@ -104,4 +126,6 @@ public class OrderServiceTest {
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
     }
+
+
 }
