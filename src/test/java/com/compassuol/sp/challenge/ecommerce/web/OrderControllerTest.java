@@ -17,12 +17,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+
+import java.util.List;
+
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.*;
 
 
 @ActiveProfiles("test")
@@ -99,5 +104,25 @@ public class OrderControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(orderService, times(1)).create(any());
+    }
+
+
+    @Test
+    public void getOrderById_WithExistingId_ReturnsOrder() throws Exception {
+        final Order order = generateValidOrder(PaymentMethod.PIX);
+
+        when(orderService.getOrderById(1L)).thenReturn(order);
+
+        final OrderResponseDto dto = OrderMapper.toDto(order);
+
+        mockMvc.perform(
+                        get("/orders/{id}", 1L)
+                )
+                .andExpect(status().isOk())
+                .andExpect(
+                        content().json(objectMapper.writeValueAsString(dto))
+                );
+
+        verify(orderService, times(1)).getOrderById(1L);
     }
 }
