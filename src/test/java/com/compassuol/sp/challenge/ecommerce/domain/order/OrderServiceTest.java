@@ -9,13 +9,17 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.SENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -103,5 +107,34 @@ public class OrderServiceTest {
 
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
+    }
+
+    @Test
+    public void updateOrder_WithExistingId_ReturnsUpdatedOrder() {
+        Long orderId = 1L;
+        when(orderRepository.findById(orderId)).thenReturn(Optional.ofNullable(EXISTING_ORDER));
+        when(orderRepository.save(EXISTING_ORDER)).thenReturn(UPDATED_ORDER);
+
+        Order sut = orderService.updateOrder(UPDATED_ORDER, orderId);
+
+        assertThat(sut).isNotNull();
+        assertThat(sut).isEqualTo(UPDATED_ORDER);
+        assertThat(EXISTING_ORDER.getStatus()).isEqualTo(SENT);
+
+        verify(orderRepository, times(1)).findById(orderId);
+        verify(orderRepository, times(1)).save(EXISTING_ORDER);
+    }
+
+    @Test
+    public void updateOrder_OrderDoesNotExist_ThrowsEntityNotFoundException() {
+        Long orderId = 1L;
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.updateOrder(UPDATED_ORDER, orderId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Nenhum pedido foi encontrado com este Id: " + orderId);
+
+        verify(orderRepository, times(1)).findById(orderId);
+        verify(orderRepository, never()).save(any(Order.class));
     }
 }
