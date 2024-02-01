@@ -17,34 +17,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
-import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
-import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.SENT;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderUtils {
-    public static final Order EXISTING_ORDER = Order.builder().id(1L).status(CONFIRMED).build();
-    public static final Order UPDATED_ORDER = Order.builder().id(1L).status(SENT).build();
 
     public static OrderUpdateDto createUpdateDto(Order order) {
         OrderUpdateDto dto = new OrderUpdateDto();
         dto.setStatus(order.getStatus().name());
-        return dto;
-    }
-
-    public static OrderResponseDto toResponseDto(Order order) {
-        OrderResponseDto dto = new OrderResponseDto();
-        dto.setId(order.getId());
-        dto.setAddress(createAddressResponseDto(order.getAddress()));
-        dto.setPaymentMethod((order.getPaymentMethod().name()));
-        dto.setDiscount(order.getDiscount());
-        dto.setSubtotalValue(order.getSubtotalValue());
-        dto.setTotalValue(order.getTotalValue());
-        dto.setCreatedDate(order.getCreatedDate());
-        dto.setStatus(order.getStatus().name());
-        if (order.getCancelReason() != null)
-            dto.setCancelReason(order.getCancelReason());
-        if (order.getCancelDate() != null)
-            dto.setCancelDate(order.getCancelDate());
         return dto;
     }
 
@@ -94,14 +73,6 @@ public class OrderUtils {
     }
 
     public static Order generateValidOrder(PaymentMethod paymentMethod, Product product) {
-        return generateValidOrder(paymentMethod, product, CONFIRMED);
-    }
-
-    public static Order generateValidOrder(OrderStatus status) {
-        return generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT, status);
-    }
-
-    public static Order generateValidOrder(PaymentMethod paymentMethod, Product product, OrderStatus status) {
         final List<OrderProduct> products = List.of(OrderProduct.builder()
                 .product(product).quantity(1)
                 .build());
@@ -122,7 +93,7 @@ public class OrderUtils {
                 .subtotalValue(subtotal)
                 .discount(discount)
                 .totalValue(totalValue)
-                .status(status)
+                .status(OrderStatus.CONFIRMED)
                 .createdDate(LocalDateTime.now())
                 .build();
     }

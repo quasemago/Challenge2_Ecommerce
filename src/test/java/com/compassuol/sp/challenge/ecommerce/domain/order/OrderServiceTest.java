@@ -19,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
 import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.SENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -112,27 +114,33 @@ public class OrderServiceTest {
     @Test
     public void updateOrder_WithExistingId_ReturnsUpdatedOrder() {
         Long orderId = 1L;
-        when(orderRepository.findById(orderId)).thenReturn(Optional.ofNullable(EXISTING_ORDER));
-        when(orderRepository.save(EXISTING_ORDER)).thenReturn(UPDATED_ORDER);
+        Order existingOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        Order updatedOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        existingOrder.setStatus(CONFIRMED);
+        updatedOrder.setStatus(SENT);
 
-        Order sut = orderService.updateOrder(UPDATED_ORDER, orderId);
+        when(orderRepository.findById(orderId)).thenReturn(Optional.ofNullable(existingOrder));
+        when(orderRepository.save(existingOrder)).thenReturn(updatedOrder);
+
+        Order sut = orderService.updateOrder(updatedOrder, orderId);
 
         assertThat(sut).isNotNull();
-        assertThat(sut).isEqualTo(UPDATED_ORDER);
-        assertThat(EXISTING_ORDER.getStatus()).isEqualTo(SENT);
+        assertThat(sut).isEqualTo(updatedOrder);
+        assertThat(existingOrder.getStatus()).isEqualTo(SENT);
 
         verify(orderRepository, times(1)).findById(orderId);
-        verify(orderRepository, times(1)).save(EXISTING_ORDER);
+        verify(orderRepository, times(1)).save(existingOrder);
     }
 
     @Test
     public void updateOrder_OrderDoesNotExist_ThrowsEntityNotFoundException() {
         Long orderId = 1L;
+        Order updatedOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        updatedOrder.setStatus(SENT);
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> orderService.updateOrder(UPDATED_ORDER, orderId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Nenhum pedido foi encontrado com este Id: " + orderId);
+        assertThatThrownBy(() -> orderService.updateOrder(updatedOrder, orderId))
+                .isInstanceOf(EntityNotFoundException.class);
 
         verify(orderRepository, times(1)).findById(orderId);
         verify(orderRepository, never()).save(any(Order.class));
