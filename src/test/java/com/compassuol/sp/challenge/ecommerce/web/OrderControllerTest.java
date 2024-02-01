@@ -6,6 +6,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNot
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.web.controller.OrderController;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCancelDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,4 +101,25 @@ public class OrderControllerTest {
 
         verify(orderService, times(1)).create(any());
     }
+
+    @Test
+    public void cancelOrder_WithValidData_ReturnsOrder() throws Exception {
+        final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+
+        when(orderService.cancelOrder(any(), any())).thenReturn(sutOrder);
+        final OrderResponseDto responseBody = OrderMapper.toDto(sutOrder);
+
+        mockMvc.perform(
+                        post("/orders/{id}/cancel", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(new OrderCancelDto("Motivo do cancelamento")))
+
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
+
+        verify(orderService, times(1)).cancelOrder(any(), any());
+    }
+
 }
+

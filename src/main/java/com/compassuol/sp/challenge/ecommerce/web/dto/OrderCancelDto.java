@@ -11,4 +11,9 @@ import lombok.Setter;
 public class OrderCancelDto {
     @NotBlank
     private String cancelReason;
+
+    public OrderCancelDto(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
 }
