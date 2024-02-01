@@ -6,6 +6,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,6 +30,12 @@ public class OrderRepositoryTest {
     @Autowired
     private OrderRepository orderRepository;
 
+    @AfterEach
+    public void afterEach() {
+        VALID_PRODUCT.setId(null);
+        testEntityManager.detach(VALID_PRODUCT);
+    }
+
     @Test
     public void createOrder_WithValidData_ReturnsOrder() {
         final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD, VALID_PRODUCT);
@@ -49,6 +56,7 @@ public class OrderRepositoryTest {
         assertThatThrownBy(() -> orderRepository.save(sutOrder))
                 .isInstanceOf(Exception.class);
     }
+
     @Test
     public void getAllOrders_WithStatus_ReturnsOrderList() {
         final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD, VALID_PRODUCT);
@@ -64,7 +72,7 @@ public class OrderRepositoryTest {
     }
 
     @Test
-    public void getAllOrders_ReturnsEmptyList () {
+    public void getAllOrders_ReturnsEmptyList() {
         final List<Order> orders = orderRepository.findAllByStatusOrderByCreatedDateDesc(OrderStatus.CANCELED);
         assertThat(orders).isEmpty();
     }
