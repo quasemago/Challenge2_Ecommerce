@@ -1,45 +1,33 @@
 package com.compassuol.sp.challenge.ecommerce.domain.order;
 
-import com.compassuol.sp.challenge.ecommerce.common.OrderUtils;
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
-
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
-import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
-import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCancelDto;
-import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
-import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
-import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
-import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CANCELED;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.PRODUCT_1;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -140,4 +128,84 @@ public class OrderServiceTest {
         verify(orderRepository, never()).save(canceledOrder);
     }
 
+    @Test
+    public void getOrderById_WithExistingId_ReturnsOrder() {
+        Order order = generateValidOrder(PaymentMethod.PIX, PRODUCT_1);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        Order sut = orderService.getOrderById(1L);
+        assertThat(sut).isEqualTo(order);
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void getOrderById_WithNonExistingId_ThrowsEntityNotFoundException() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> orderService.getOrderById(1L)).isInstanceOf(EntityNotFoundException.class);
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void updateOrder_WithExistingId_ReturnsUpdatedOrder() {
+        Long orderId = 1L;
+        Order existingOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        Order updatedOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        existingOrder.setStatus(CONFIRMED);
+        updatedOrder.setStatus(SENT);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.ofNullable(existingOrder));
+        when(orderRepository.save(existingOrder)).thenReturn(updatedOrder);
+
+        Order sut = orderService.updateOrder(updatedOrder, orderId);
+
+        assertThat(sut).isNotNull();
+        assertThat(sut).isEqualTo(updatedOrder);
+        assertThat(existingOrder.getStatus()).isEqualTo(SENT);
+
+        verify(orderRepository, times(1)).findById(orderId);
+        verify(orderRepository, times(1)).save(existingOrder);
+    }
+
+    @Test
+    public void updateOrder_OrderDoesNotExist_ThrowsEntityNotFoundException() {
+        Long orderId = 1L;
+        Order updatedOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        updatedOrder.setStatus(SENT);
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.updateOrder(updatedOrder, orderId))
+                .isInstanceOf(EntityNotFoundException.class);
+
+        verify(orderRepository, times(1)).findById(orderId);
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    public void getAllOrders_WithStatus_ReturnsOrderList() {
+        List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
+
+        when(orderRepository.findAllByStatusOrderByCreatedDateDesc(OrderStatus.CONFIRMED))
+                .thenReturn(order);
+
+        List<Order> orderList = orderService.getAllByStatus(OrderStatus.CONFIRMED);
+
+        assertThat(orderList).isNotNull();
+        assertThat(orderList).hasSize(2);
+
+        verify(orderRepository, times(1)).findAllByStatusOrderByCreatedDateDesc(OrderStatus.CONFIRMED);
+    }
+
+    @Test
+    public void getAllOrders_WithoutStatus_ReturnsOrderList() {
+        List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
+
+        when(orderRepository.findAllOrderByCreatedDateDesc())
+                .thenReturn(order);
+
+        List<Order> orderList = orderService.getAllByStatus(null);
+
+        assertThat(orderList).isNotNull();
+        assertThat(orderList).hasSize(2);
+
+        verify(orderRepository, times(1)).findAllOrderByCreatedDateDesc();
+    }
 }
