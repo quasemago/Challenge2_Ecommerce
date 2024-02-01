@@ -21,7 +21,7 @@ Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-pr
         - [Regras de negócio](#regras-de-negócio)
         - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
         - [Endpoints](#endpoints)
-          - [Payloads](#payloads)
+        - [Payloads](#payloads)
           - [Exemplos de requisições](#exemplos-de-requisições)
       - [Pedido (Order)](#pedido-order)
   - [Fluxo de erros](#fluxo-de-erros)
@@ -83,15 +83,14 @@ O domínio **Produto** possui as seguintes regras de negócio:
 - O valor do produto deve ser um número positivo.
 
 ### Endpoints
-A API disponibiliza endpoints REST para interação. Os principais são:
+A API disponibiliza endpoints REST para interação. Sendo:
 - `POST /products`: Cria um novo produto.
 - `GET /products`: Recupera uma lista de todos os produtos cadastrados.
 - `GET /products/:id`: Recupera as informações de um produto específico.
 - `PUT /products/:id`: Atualiza as informações de um produto existente.
 - `DELETE /products/:id`: Deleta um produto existente.
 
-#### Payloads
-
+### Payloads
 Ademais, a API possui os seguintes payloads para interação:
 - `ProductCreate`: Payload utilizado para criação e atualização de um produto. Exemplo:
     ```json
@@ -193,6 +192,312 @@ Ademais, a API possui os seguintes payloads para interação:
   - Nesse caso, não há corpo de resposta, pois a resposta é sem conteúdo.
 
 ## Pedido (Order)
+O domínio **Pedido** consiste em uma API REST que permite que os usuários façam pedidos de produtos de um catálogo.
+
+### Regras de negócio
+O domínio **Pedido** possui as seguintes regras de negócio:
+- Para completar as informações relativas ao endereço, deve ser consultado os dados na API ViaCEP.
+- A operação GET /orders deve estar ordenada por data de criação, dos pedidos mais recentes para os mais antigos. Além disso, deve ser possível filtrar por status do pedido.
+- Status dos pedidos: `CONFIRMED`, `SENT`, `CANCELED`
+- Tipos permitidos de pagamento: `CREDIT_CARD`, `BANK_TRANSFER`, `CRYPTOCURRENCY`, `GIFT_CARD`, `PIX`, `OTHER`.
+- O valor total do pedido é calculado pela aplicação de acordo com a seguinte fórmula: total_value = subtotal_value - discount
+- O desconto de 5% é aplicado apenas para pedidos com método de pagamento PIX.
+- Para o endereço, deve ser informado apenas `number`, `complement` e `postal_code`.
+- Para complementar as informações relativas ao endereço, deve ser consultar os dados na API ViaCEP.
+
+Além disso, a opção de cancelamento de pedidos possui as seguintes regras de negócio:
+- Um pedido só pode ser cancelado se o status for diferente de `SENT`.
+- Um pedido não pode ser cancelado se tiver mais de 90 dias de criação.
+- Após o cancelamento, o status do pedido deverá ser alterado para `CANCELED`.
+
+### Endpoints
+A API disponibiliza endpoints REST para interação. Sendo:
+- `POST /orders`: Cria um novo pedido.
+- `GET /orders`: Recupera uma lista ordenada por data de criação, do mais recente para o mais antigo, de todos os pedidos cadastrados. Além disso, é possível filtrar por status do pedido.
+  - Exemplo do endpoint com filtro por status: `GET /orders?status=CONFIRMED`.
+- `GET /orders/:id`: Recupera as informações de um pedido específico.
+- `PUT /orders/:id`: Atualiza as informações do status de um pedido existente.
+- `POST /orders/:id/cancel`: Cancela um pedido existente.
+
+### Payloads
+Ademais, a API possui os seguintes payloads para interação:
+- `OrderCreate`: Payload utilizado para criação de um pedido. Exemplo:
+    ```json
+    {
+      "products": [
+        {
+          "productId": 1,
+          "quantity": 2
+        },
+        {
+          "productId": 2,
+          "quantity": 5
+        }
+      ],
+      "address": {
+        "number": 10,
+        "complement": "Próximo a av. Pitanga",
+        "postalCode": "01001000"
+      },
+      "paymentMethod": "PIX"
+    }
+    ```
+- `OrderUpdate`: Payload utilizado para atualização do status de um pedido. Exemplo:
+    ```json
+    {
+      "status": "SENT"
+    }
+    ```
+- `OrderCancel`: Payload utilizado para cancelamento de um pedido. Exemplo:
+    ```json
+    {
+      "cancelReason": "Motivo do cancelamento do cliente"
+    }
+    ```
+- `OrderResponse`: Payload utilizado para retorno de informações de um pedido. Exemplo:
+  ```json
+  {
+    "id": 1,
+    "products": [
+      {
+        "productId": 1,
+        "quantity": 2
+      },
+      {
+        "productId": 2,
+        "quantity": 5
+      }
+    ],
+    "address": {
+      "street": "Praça da Sé",
+      "number": 10,
+      "complement": "Próximo a av. Pitanga",
+      "city": "São Paulo",
+      "state": "SP",
+      "postalCode": "01001-000"
+    },
+    "paymentMethod": "PIX",
+    "subtotalValue": 100.00,
+    "discount": 0.5,
+    "totalValue": 95.00,
+    "createdDate": "2023-07-20T12:00:00Z",
+    "status": "CONFIRMED"
+  }
+  ```
+
+#### Exemplos de requisições
+**Para criar um novo pedido:**
+- Requisição:
+    ```json
+    POST /orders
+    {
+      "products": [
+        {
+          "productId": 1,
+          "quantity": 2
+        },
+        {
+          "productId": 2,
+          "quantity": 5
+        }
+      ],
+      "address": {
+        "number": 10,
+        "complement": "Próximo a av. Pitanga",
+        "postalCode": "01001000"
+      },
+      "paymentMethod": "PIX"
+    }
+    ```
+- Resposta (Status 201 - Created):
+    ```json
+    {
+      "id": 1,
+      "products": [
+        {
+          "productId": 1,
+          "quantity": 2
+        },
+        {
+          "productId": 2,
+          "quantity": 5
+        }
+      ],
+      "address": {
+        "street": "Praça da Sé",
+        "number": 10,
+        "complement": "Próximo a av. Pitanga",
+        "city": "São Paulo",
+        "state": "SP",
+        "postalCode": "01001-000"
+      },
+      "paymentMethod": "PIX",
+      "subtotalValue": 100.00,
+      "discount": 0.5,
+      "totalValue": 95.00,
+      "createdDate": "2023-07-20T12:00:00Z",
+      "status": "CONFIRMED"
+    }
+    ```
+
+**Para recuperar uma lista de todos os pedidos cadastrados:**
+- Requisição:
+    ```json
+    GET /orders
+    ```
+  Ou com filtro por status:
+    ```json
+    GET /orders?status=CONFIRMED
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    [
+      {
+        "id": 1,
+        "products": [
+          {
+            "productId": 1,
+            "quantity": 2
+          },
+          {
+            "productId": 2,
+            "quantity": 5
+          }
+        ],
+        "address": {
+          "street": "Praça da Sé",
+          "number": 10,
+          "complement": "Próximo a av. Pitanga",
+          "city": "São Paulo",
+          "state": "SP",
+          "postalCode": "01001-000"
+        },
+        "paymentMethod": "PIX",
+        "subtotalValue": 100.00,
+        "discount": 0.5,
+        "totalValue": 95.00,
+        "createdDate": "2023-07-20T12:00:00Z",
+        "status": "CONFIRMED"
+      },
+      // Outros pedidos...
+    ]
+    ```
+
+**Para recuperar informações de um pedido específico:**
+- Requisição:
+    ```json
+    GET /orders/5
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    {
+      "id": 5,
+      "products": [
+        {
+          "productId": 1,
+          "quantity": 2
+        },
+        {
+          "productId": 2,
+          "quantity": 5
+        }
+      ],
+      "address": {
+        "street": "Praça da Sé",
+        "number": 10,
+        "complement": "Próximo a av. Pitanga",
+        "city": "São Paulo",
+        "state": "SP",
+        "postalCode": "01001-000"
+      },
+      "paymentMethod": "PIX",
+      "subtotalValue": 100.00,
+      "discount": 0.5,
+      "totalValue": 95.00,
+      "createdDate": "2023-07-20T12:00:00Z",
+      "status": "CONFIRMED"
+    }
+    ```
+
+**Para atualizar o status de um pedido existente:**
+- Requisição:
+    ```json
+    PUT /orders/15
+    {
+      "status": "SENT"
+    }
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    {
+      "id": 15,
+      "products": [
+        {
+          "productId": 1,
+          "quantity": 2
+        },
+        {
+          "productId": 2,
+          "quantity": 5
+        }
+      ],
+      "address": {
+        "street": "Praça da Sé",
+        "number": 10,
+        "complement": "Próximo a av. Pitanga",
+        "city": "São Paulo",
+        "state": "SP",
+        "postalCode": "01001-000"
+      },
+      "paymentMethod": "PIX",
+      "subtotalValue": 100.00,
+      "discount": 0.5,
+      "totalValue": 95.00,
+      "createdDate": "2023-07-20T12:00:00Z",
+      "status": "SENT"
+    }
+    ```
+
+**Para cancelar um pedido existente:**
+- Requisição:
+    ```json
+    POST /orders/15/cancel
+    {
+      "cancelReason": "Motivo do cancelamento do cliente"
+    }
+    ```
+- Resposta (Status 200 - OK):
+    ```json
+    {
+      "id": 15,
+      "products": [
+        {
+          "productId": 1,
+          "quantity": 2
+        },
+        {
+          "productId": 2,
+          "quantity": 5
+        }
+      ],
+      "address": {
+        "street": "Praça da Sé",
+        "number": 10,
+        "complement": "Próximo a av. Pitanga",
+        "city": "São Paulo",
+        "state": "SP",
+        "postalCode": "01001-000"
+      },
+      "paymentMethod": "PIX",
+      "subtotalValue": 100.00,
+      "discount": 0.5,
+      "totalValue": 95.00,
+      "createdDate": "2023-07-20T12:00:00Z",
+      "status": "CANCELED",
+      "cancelReason": "Motivo do cancelamento do cliente",
+      "cancelDate": "2023-07-20T12:00:00Z"
+    }
+    ```
 
 ---
 # Fluxo de erros
