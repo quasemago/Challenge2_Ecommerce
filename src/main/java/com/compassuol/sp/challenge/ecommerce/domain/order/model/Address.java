@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode
 @Entity
-@Table(name = "adresses")
+@Table(name = "addresses")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
