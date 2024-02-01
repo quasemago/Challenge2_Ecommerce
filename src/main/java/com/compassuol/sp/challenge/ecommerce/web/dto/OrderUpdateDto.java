@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class OrderUpdateDto {
     @NotNull
-    @Pattern(regexp = "^(?:SENT|CANCELED|CONFIRMED)$")
+    @Pattern(regexp = "SENT|CANCELED|CONFIRMED")
     private String status;
 }

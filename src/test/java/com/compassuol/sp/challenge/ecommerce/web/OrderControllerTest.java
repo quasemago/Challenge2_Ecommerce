@@ -23,10 +23,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -139,6 +140,54 @@ public class OrderControllerTest {
     }
 
     @Test
+    public void updateOrder_WithValidData_ReturnsUpdatedOrderDto() throws Exception {
+        Long orderId = 1L;
+        final Order validOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        validOrder.setStatus(CONFIRMED);
+        when(orderService.updateOrder(any(Order.class), eq(orderId))).thenReturn(validOrder);
+        final OrderResponseDto responseBody = OrderMapper.toDto(validOrder);
+
+        mockMvc.perform(put("/orders/{id}", orderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createUpdateDto(validOrder))))
+                .andExpect(status().isOk())
+                .andExpectAll(
+                        jsonPath("$.status").value(responseBody.getStatus())
+                );
+        verify(orderService, times(1)).updateOrder(any(Order.class), eq(orderId));
+    }
+
+    @Test
+    public void updateOrder_WithNonExistingId_ReturnsNotFound() throws Exception {
+        Long orderId = 1L;
+        final Order validOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        validOrder.setStatus(CONFIRMED);
+        doThrow(EntityNotFoundException.class).when(orderService).updateOrder(any(Order.class), eq(orderId));
+
+        mockMvc.perform(put("/orders/{id}", orderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createUpdateDto(validOrder))))
+                .andExpect(status().isNotFound());
+
+        verify(orderService, times(1)).updateOrder(any(Order.class), eq(orderId));
+
+    }
+
+    @Test
+    public void updateOrder_WithInvalidStatus_ReturnsBadRequest() throws Exception {
+        Long orderId = 1L;
+        doThrow(IllegalArgumentException.class).when(orderService).updateOrder(any(Order.class), eq(orderId));
+
+        mockMvc.perform(put("/orders/{id}", orderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\": \"INVALID\"}")
+                )
+                .andExpect(status().isBadRequest());
+
+        verify(orderService, never()).updateOrder(any(Order.class), eq(orderId));
+    }
+
+    @Test
     public void getAllOrders_ReturnsListOfOrders() throws Exception {
         final List<Order> orders = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD));
 
@@ -175,4 +224,3 @@ public class OrderControllerTest {
         verify(orderService, times(1)).getAllByStatus(OrderStatus.SENT);
     }
 }
-
