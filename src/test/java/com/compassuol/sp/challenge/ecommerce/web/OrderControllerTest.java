@@ -107,6 +107,38 @@ public class OrderControllerTest {
         verify(orderService, times(1)).create(any());
     }
 
+
+    @Test
+    public void getOrderById_WithExistingId_ReturnsOrder() throws Exception {
+        final Order order = generateValidOrder(PaymentMethod.PIX);
+
+        when(orderService.getOrderById(1L)).thenReturn(order);
+
+        final OrderResponseDto dto = OrderMapper.toDto(order);
+
+        mockMvc.perform(
+                        get("/orders/{id}", 1L)
+                )
+                .andExpect(status().isOk())
+                .andExpect(
+                        content().json(objectMapper.writeValueAsString(dto))
+                );
+
+        verify(orderService, times(1)).getOrderById(1L);
+    }
+
+    @Test
+    public void getOrderById_WithNonExistingId_ReturnsNotFound() throws Exception {
+        when(orderService.getOrderById(1L)).thenThrow(EntityNotFoundException.class);
+
+        mockMvc.perform(
+                        get("/orders/{id}", 1L)
+                )
+                .andExpect(status().isNotFound());
+
+        verify(orderService, times(1)).getOrderById(1L);
+    }
+
     @Test
     public void updateOrder_WithValidData_ReturnsUpdatedOrderDto() throws Exception {
         Long orderId = 1L;

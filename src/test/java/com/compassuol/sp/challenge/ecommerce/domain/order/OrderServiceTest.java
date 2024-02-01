@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
 import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.PRODUCT_1;
 import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
 import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.SENT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,6 +112,22 @@ public class OrderServiceTest {
 
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
+    }
+
+    @Test
+    public void getOrderById_WithExistingId_ReturnsOrder() {
+        Order order = generateValidOrder(PaymentMethod.PIX, PRODUCT_1);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        Order sut = orderService.getOrderById(1L);
+        assertThat(sut).isEqualTo(order);
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void getOrderById_WithNonExistingId_ThrowsEntityNotFoundException() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> orderService.getOrderById(1L)).isInstanceOf(EntityNotFoundException.class);
+        verify(orderRepository, times(1)).findById(1L);
     }
 
     @Test

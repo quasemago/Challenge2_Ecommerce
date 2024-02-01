@@ -1,5 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.domain.order;
 
+
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
@@ -17,6 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.time.LocalDateTime;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.generateInvalidOrder;
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.generateValidOrder;
@@ -87,6 +89,28 @@ public class OrderRepositoryTest {
         assertThat(updatedEntity).isNotNull();
         assertThat(updatedEntity.getStatus()).isEqualTo(OrderStatus.SENT);
         assertThat(updatedEntity.getUpdateDate()).isEqualTo(retrievedOrder.getUpdateDate());
+    }
+
+    @Test
+    public void getOrderById_WithExistingId_ReturnsOrder() {
+        final Order validOrder = generateValidOrder(PaymentMethod.PIX, VALID_PRODUCT);
+        final Product savedProduct = testEntityManager.persistFlushFind(VALID_PRODUCT);
+        final List<OrderProduct> products = List.of(OrderProduct.builder().product(savedProduct).quantity(1).build());
+
+        validOrder.setProducts(products);
+        final Order savedOrder = testEntityManager.persistFlushFind(validOrder);
+
+
+        Optional<Order> orderOpt = orderRepository.findById(savedOrder.getId());
+        assertThat(orderOpt).isNotEmpty();
+        assertThat(orderOpt.get()).isEqualTo(savedOrder);
+    }
+
+    @Test
+    public void getOrderById_WithNonExistingId_ReturnsEmpty() {
+        Optional<Order> orderOpt = orderRepository.findById(1L);
+
+        assertThat(orderOpt).isEmpty();
     }
 
     @Test
