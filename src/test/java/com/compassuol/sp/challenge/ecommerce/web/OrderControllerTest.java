@@ -9,6 +9,7 @@ import com.compassuol.sp.challenge.ecommerce.web.controller.OrderController;
 import com.compassuol.sp.challenge.ecommerce.web.dto.OrderResponseDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.mapper.OrderMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,11 +19,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ActiveProfiles("test")
@@ -99,5 +101,35 @@ public class OrderControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(orderService, times(1)).create(any());
+    }
+
+    @Test
+    public void updateOrder_WithValidData_ReturnsUpdatedOrderDto() throws Exception {
+        Long orderId = 1L;
+        when(orderService.updateOrder(any(Order.class), eq(orderId))).thenReturn(generateValidOrder(CONFIRMED));
+        final OrderResponseDto responseBody = toResponseDto(generateValidOrder(CONFIRMED));
+
+        mockMvc.perform(put("/orders/{id}", orderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createUpdateDto(generateValidOrder(CONFIRMED)))))
+                .andExpect(status().isOk())
+                .andExpectAll(
+                        jsonPath("$.status").value(responseBody.getStatus())
+                );
+        verify(orderService, times(1)).updateOrder(any(Order.class), eq(orderId));
+    }
+
+    @Test
+    public void updateOrder_WithNonExistingId_ReturnsNotFound() throws Exception {
+        Long orderId = 1L;
+        doThrow(EntityNotFoundException.class).when(orderService).updateOrder(any(Order.class), eq(orderId));
+
+        mockMvc.perform(put("/orders/{id}", orderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createUpdateDto(generateValidOrder(CONFIRMED)))))
+                .andExpect(status().isNotFound());
+
+        verify(orderService, times(1)).updateOrder(any(Order.class), eq(orderId));
+
     }
 }
