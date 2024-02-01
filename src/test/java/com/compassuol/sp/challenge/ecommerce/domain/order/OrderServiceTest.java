@@ -5,6 +5,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
@@ -23,11 +24,12 @@ import java.util.Optional;
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
 import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
 import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.PRODUCT_1;
-import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
-import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.SENT;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
@@ -112,6 +114,77 @@ public class OrderServiceTest {
 
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
+    }
+
+    @Test
+    public void cancelOrder_WithValidData_ReturnsOrder() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+        when(orderRepository.save(any(Order.class))).thenReturn(validOrder);
+
+        Order sut = orderService.cancelOrder(validOrder.getId(), "Test Reason");
+
+        assertThat(sut).isNotNull();
+        assertThat(sut.getStatus()).isEqualTo(OrderStatus.CANCELED);
+        assertThat(sut.getCancelDate()).isNotNull();
+        assertThat(sut.getCancelReason()).isEqualTo("Test Reason");
+
+        verify(orderRepository, times(1)).findById(anyLong());
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    @Test
+    public void cancelOrder_WithNonExistingOrder_ThrowsEntityNotFoundException() {
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(EntityNotFoundException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void cancelOrder_WithAlreadyCanceledOrder_ThrowsException() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+        validOrder.setStatus(CANCELED);
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(OrderCancellationNotAllowedException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void cancelOrder_WithSentStatus_ThrowsException() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+        validOrder.setStatus(SENT);
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(OrderCancellationNotAllowedException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void cancelOrder_WithMore90DaysOrder_ThrowsException() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+        validOrder.setCreatedDate(validOrder.getCreatedDate().minusDays(91));
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(OrderCancellationNotAllowedException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
     }
 
     @Test

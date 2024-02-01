@@ -6,7 +6,10 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.OrderProduct;
 import com.compassuol.sp.challenge.ecommerce.domain.product.model.Product;
-import com.compassuol.sp.challenge.ecommerce.web.dto.*;
+import com.compassuol.sp.challenge.ecommerce.web.dto.AddressCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.OrderUpdateDto;
+import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -26,20 +29,6 @@ public class OrderUtils {
         dto.setStatus(order.getStatus().name());
         return dto;
     }
-
-    public static AddressResponseDto createAddressResponseDto(Address address) {
-        AddressResponseDto dto = new AddressResponseDto();
-
-        dto.setStreet(address.getStreet());
-        dto.setNumber(address.getNumber());
-        dto.setComplement(address.getComplement());
-        dto.setCity(address.getCity());
-        dto.setState(address.getState());
-        dto.setPostalCode(address.getPostalCode());
-
-        return dto;
-    }
-
 
     public static OrderCreateDto createOrderDto(Order order) {
         OrderCreateDto dto = new OrderCreateDto();
