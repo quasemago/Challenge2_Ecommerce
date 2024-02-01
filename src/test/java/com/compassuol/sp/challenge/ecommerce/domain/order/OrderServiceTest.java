@@ -1,6 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.domain.order;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
@@ -144,5 +146,35 @@ public class OrderServiceTest {
 
         verify(orderRepository, times(1)).findById(orderId);
         verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    public void getAllOrders_WithStatus_ReturnsOrderList() {
+        List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
+
+        when(orderRepository.findAllByStatusOrderByCreatedDateDesc(OrderStatus.CONFIRMED))
+                .thenReturn(order);
+
+        List<Order> orderList = orderService.getAllByStatus(OrderStatus.CONFIRMED);
+
+        assertThat(orderList).isNotNull();
+        assertThat(orderList).hasSize(2);
+
+        verify(orderRepository, times(1)).findAllByStatusOrderByCreatedDateDesc(OrderStatus.CONFIRMED);
+    }
+
+    @Test
+    public void getAllOrders_WithoutStatus_ReturnsOrderList() {
+        List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
+
+        when(orderRepository.findAllOrderByCreatedDateDesc())
+                .thenReturn(order);
+
+        List<Order> orderList = orderService.getAllByStatus(null);
+
+        assertThat(orderList).isNotNull();
+        assertThat(orderList).hasSize(2);
+
+        verify(orderRepository, times(1)).findAllOrderByCreatedDateDesc();
     }
 }
