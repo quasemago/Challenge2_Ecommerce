@@ -7,26 +7,35 @@ Cada domínio possui 5 (cinco) endpoints, e foram todos documentados utilizando 
 Para testes das implementações, foi utilizado inicialmente o aplicativo Postman, cobrindo assim os testes de requisições.
 Ademais, posteriormente para testes de únidades e integração, foi utilizado o JUnit 5 em conjunto com o Mockito.
 
-**Importante:**
-Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-projeto). Essa seção contem instruções e também a [Coleção do Postman](#coleção-do-postman) exportada para testes das requisições.
+### Autores
+A equipe **CoffeeWithSpring**, responsável pelo desenvolvimento do projeto desse desáfio é composta por:
+
+| **E-mail**                           | **Usuário Github** |
+|--------------------------------------|--------------------|
+| bruno.ronning.pb@compasso.com.br     | quasemago          |
+| franciele.dalaros.pb@compasso.com.br | francieledalarosa  |
+| luisa.kroth.pb@compasso.com.br       | luisafkroth        |
+| mayke.lellis.pb@compasso.com.br      | maykeanselmo       |
+| pedro.koberstain.pb@compasso.com.br  | pedrokoberstain    |
 
 ## Sumário
 - [Challenge 2 - E-commerce (CompassUOL)](#challenge-2---e-commerce-compassuol)
+  - [Autores](#autores)
   - [Tecnologias utilizadas](#tecnologias-utilizadas)
     - [Dependências](#dependências)
   - [Domínios](#domínios)
-      - [Regras de negócio gerais](#regras-de-negócio-gerais)
-      - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
-      - [Product (Produto)](#produto-product)
-        - [Regras de negócio](#regras-de-negócio)
-        - [Endpoints](#endpoints)
-        - [Payloads](#payloads)
-          - [Exemplos de requisições](#exemplos-de-requisições)
-      - [Pedido (Order)](#pedido-order)
-        - [Regras de negócio](#regras-de-negócio-1)
-        - [Endpoints](#endpoints-1)
-        - [Payloads](#payloads-1)
-          - [Exemplos de requisições](#exemplos-de-requisições-1)
+    - [Regras de negócio gerais](#regras-de-negócio-gerais)
+    - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
+    - [Product (Produto)](#produto-product)
+      - [Regras de negócio](#regras-de-negócio)
+      - [Endpoints](#endpoints)
+      - [Payloads](#payloads)
+        - [Exemplos de requisições](#exemplos-de-requisições)
+    - [Pedido (Order)](#pedido-order)
+      - [Regras de negócio](#regras-de-negócio-1)
+      - [Endpoints](#endpoints-1)
+      - [Payloads](#payloads-1)
+        - [Exemplos de requisições](#exemplos-de-requisições-1)
   - [Fluxo de erros](#fluxo-de-erros)
   - [Como executar o projeto](#como-executar-o-projeto)
     - [Utilizando uma IDE (IntelliJ IDEA)](#utilizando-uma-ide-intellij-idea)
@@ -519,19 +528,19 @@ Exemplo de resposta de erro ao tentar cadastrar um produto com o nome já existe
 Exemplo de resposta de erro ao tentar cadastrar um produto com campos mal formatados ou incompletos:
 ```json
 {
-    "code": 400,
-    "status": "Bad Request",
-    "message": "Campo(s) inválido(s).",
-    "details": [
-        {
-            "field": "value",
-            "message": "O valor do produto deve ser um número positivo."
-        },
-        {
-            "field": "name",
-            "message": "O nome do produto não pode estar em branco."
-        }
-    ]
+  "code": 400,
+  "status": "Bad Request",
+  "message": "Campo(s) inválido(s).",
+  "details": [
+    {
+      "field": "value",
+      "message": "O valor do produto deve ser um número positivo."
+    },
+    {
+      "field": "name",
+      "message": "O nome do produto não pode estar em branco."
+    }
+  ]
 }
 ```
 
@@ -597,4 +606,4 @@ Esta experiência não apenas fortaleceu nossas habilidades técnicas em desenvo
 Agradecemos à Compass UOL pela oportunidade e estamos comprometidos em continuar crescendo e aprendendo juntos como equipe.
 
 Atenciosamente,
-Equipe CoffeWithSpring
+Equipe [CoffeeWithSpring](#autores).
