@@ -1,6 +1,7 @@
 package com.compassuol.sp.challenge.ecommerce.domain.order;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,5 +107,34 @@ public class OrderServiceTest {
 
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
+    }
+    @Test
+    public void getAllOrders_WithStatus_ReturnsOrderList() {
+        List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
+
+        when(orderRepository.findAllByStatusOrderByCreatedDateDesc(OrderStatus.CONFIRMED))
+                .thenReturn(order);
+
+        List<Order> orderList = orderService.getAllByStatus(OrderStatus.CONFIRMED);
+
+        assertThat(orderList).isNotNull();
+        assertThat(orderList).hasSize(2);
+
+        verify(orderRepository, times(1)).findAllByStatusOrderByCreatedDateDesc(OrderStatus.CONFIRMED);
+    }
+
+    @Test
+    public void getAllOrders_WithoutStatus_ReturnsOrderList (){
+        List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
+
+        when(orderRepository.findAllOrderByCreatedDateDesc())
+                .thenReturn(order);
+
+        List<Order> orderList = orderService.getAllByStatus(null);
+
+        assertThat(orderList).isNotNull();
+        assertThat(orderList).hasSize(2);
+
+        verify(orderRepository, times(1)).findAllOrderByCreatedDateDesc();
     }
 }
