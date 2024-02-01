@@ -3,7 +3,7 @@ package com.compassuol.sp.challenge.ecommerce.domain.order.service;
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignAddressNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
@@ -15,12 +15,8 @@ import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -46,7 +42,7 @@ public class OrderService {
     private Address createOrderAddress(AddressCreateDto addressDto) {
         final Address address = addressConsumerFeign.getAddressByCep(addressDto.getPostalCode());
         if (address.getPostalCode() == null) {
-            throw new OpenFeignNotFoundException("Nenhum endereço foi encontrado com este CEP: " + addressDto.getPostalCode());
+            throw new OpenFeignAddressNotFoundException("Nenhum endereço foi encontrado com este CEP: " + addressDto.getPostalCode());
         }
         address.setNumber(addressDto.getNumber());
         address.setComplement(addressDto.getComplement());
