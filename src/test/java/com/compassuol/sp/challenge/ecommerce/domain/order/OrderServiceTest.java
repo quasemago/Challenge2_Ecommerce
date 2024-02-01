@@ -10,16 +10,20 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.EXISTING_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.CONFIRMED;
+import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.SENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -108,6 +112,42 @@ public class OrderServiceTest {
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
     }
+
+    @Test
+    public void updateOrder_WithExistingId_ReturnsUpdatedOrder() {
+        Long orderId = 1L;
+        Order existingOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        Order updatedOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        existingOrder.setStatus(CONFIRMED);
+        updatedOrder.setStatus(SENT);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.ofNullable(existingOrder));
+        when(orderRepository.save(existingOrder)).thenReturn(updatedOrder);
+
+        Order sut = orderService.updateOrder(updatedOrder, orderId);
+
+        assertThat(sut).isNotNull();
+        assertThat(sut).isEqualTo(updatedOrder);
+        assertThat(existingOrder.getStatus()).isEqualTo(SENT);
+
+        verify(orderRepository, times(1)).findById(orderId);
+        verify(orderRepository, times(1)).save(existingOrder);
+    }
+
+    @Test
+    public void updateOrder_OrderDoesNotExist_ThrowsEntityNotFoundException() {
+        Long orderId = 1L;
+        Order updatedOrder = generateValidOrder(PaymentMethod.PIX, EXISTING_PRODUCT);
+        updatedOrder.setStatus(SENT);
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.updateOrder(updatedOrder, orderId))
+                .isInstanceOf(EntityNotFoundException.class);
+
+        verify(orderRepository, times(1)).findById(orderId);
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
     @Test
     public void getAllOrders_WithStatus_ReturnsOrderList() {
         List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
@@ -124,7 +164,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getAllOrders_WithoutStatus_ReturnsOrderList (){
+    public void getAllOrders_WithoutStatus_ReturnsOrderList() {
         List<Order> order = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD), generateValidOrder(PaymentMethod.PIX));
 
         when(orderRepository.findAllOrderByCreatedDateDesc())
