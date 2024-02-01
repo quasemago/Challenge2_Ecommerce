@@ -503,7 +503,7 @@ Ademais, a API possui os seguintes payloads para interação:
 # Fluxo de erros
 Para tratamento de exceções, a API possui um fluxo de erros padrão, que consiste em um payload de resposta chamado `ErrorMessage`, que possui as informações do código do erro, o _status_, a mensagem e por fim, os detalhes se existir.
 
-Exemplo de resposta de erro, ao tentar cadastrar um produto com o nome já existente no banco de dados:
+Exemplo de resposta de erro ao tentar cadastrar um produto com o nome já existente no banco de dados:
 ```json
 {
   "code": 409,
@@ -513,7 +513,7 @@ Exemplo de resposta de erro, ao tentar cadastrar um produto com o nome já exist
 }
 ```
 
-Exemplo de erro ao tentar cadastrar um produto com campos mal formatados ou incompletos:
+Exemplo de resposta de erro ao tentar cadastrar um produto com campos mal formatados ou incompletos:
 ```json
 {
     "code": 400,
@@ -529,6 +529,16 @@ Exemplo de erro ao tentar cadastrar um produto com campos mal formatados ou inco
             "message": "O nome do produto não pode estar em branco."
         }
     ]
+}
+```
+
+Exemplo de resposta de erro ao tentar cancelar um pedido já cancelado:
+```json
+{
+  "code": 400,
+  "status": "Bad Request",
+  "message": "O pedido já foi cancelado.",
+  "details": []
 }
 ```
 
