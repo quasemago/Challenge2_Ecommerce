@@ -1,7 +1,7 @@
 # Challenge 2 - E-commerce (CompassUOL)
 O projeto consiste no desenvolvimento de uma API REST para um e-commerce, utilizando as tecnologias e conhecimentos aprendidos até o momento durante essa jornada do programa de bolsas de estágio da Compass UOL | Back-end Journey (Spring Boot) - AWS Cloud Context.
 
-O projeto foi desenvolvimento utilizando o Java JDK na versão 17 e separado em dois domínios: **Produto** e **Pedido**.
+O projeto foi desenvolvimento utilizando o Java JDK na versão 17 e separado em dois domínios: **Produto (Product)** e **Pedido (Order)**.
 Cada domínio possui 5 (cinco) endpoints, e foram todos documentados utilizando o Swagger.
 
 Para testes das implementações, foi utilizado inicialmente o aplicativo Postman, cobrindo assim os testes de requisições.
@@ -12,16 +12,19 @@ Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-pr
 
 ## Sumário
 - [Challenge 2 - E-commerce (CompassUOL)](#challenge-2---e-commerce-compassuol)
-  - [Regras de negócio gerais](#regras-de-negócio-gerais)
   - [Tecnologias utilizadas](#tecnologias-utilizadas)
     - [Dependências](#dependências)
-  - [Domínio Produto](#domínio-produto)
-    - [Regras de negócio](#regras-de-negócio)
-    - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
-    - [Endpoints](#endpoints)
-      - [Payloads](#payloads)
-      - [Exemplos de requisições](#exemplos-de-requisições)
-    - [Fluxo de erros](#fluxo-de-erros)
+  - [Domínios](#domínios)
+      - [Regras de negócio gerais](#regras-de-negócio-gerais)
+      - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
+      - [Product (Produto)](#produto-product)
+        - [Regras de negócio](#regras-de-negócio)
+        - [Estrutura do banco de dados](#estrutura-do-banco-de-dados)
+        - [Endpoints](#endpoints)
+          - [Payloads](#payloads)
+          - [Exemplos de requisições](#exemplos-de-requisições)
+      - [Pedido (Order)](#pedido-order)
+  - [Fluxo de erros](#fluxo-de-erros)
   - [Como executar o projeto](#como-executar-o-projeto)
     - [Utilizando uma IDE (IntelliJ IDEA)](#utilizando-uma-ide-intellij-idea)
     - [Utilizando o terminal](#utilizando-o-terminal)
@@ -29,20 +32,13 @@ Não esqueça de acessar a seção [Como executar o projeto](#como-executar-o-pr
       - [Coleção do Postman](#coleção-do-postman)
   - [Conclusão](#conclusão)
 
-## Regras de negócio gerais
-Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de negócio em comum, sendo elas:
-- Todos os campos data, devem seguir o padrão ISO 8601 (exemplo: 2023-07-20T12:00:00Z ).
-- Todos os campos data, devem ser definidas automaticamente.
-- As funcionalidades pedido e produto podem conter: data de cadastro ( created_date ), data de atualização ( update_date ) e data de cancelamento ( cancel_date ).
-- A documentação da API ViaCEP pode ser encontrada no endereço https://viacep.com.br/
-
 ## Tecnologias utilizadas
 - Java JDK 17
 
 ### Dependências
 - Spring Boot 3
 - Spring Boot Test (inclui o JUnit 5 e Mockito)
-- Spring Web e Spring Web Flux
+- Spring Web
 - Spring Data JPA
 - Spring Validation
 - Spring DevTools
@@ -54,23 +50,39 @@ Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de n
 - Banco de dados MySQL
 
 ---
-# Domínio Produto
+# Domínios
+
+## Regras de negócio gerais
+Apesar do projeto ter sido separado em dois domínios, ambos possuem regras de negócio em comum, sendo elas:
+- Todos os campos data, devem seguir o padrão ISO 8601 (exemplo: 2023-07-20T12:00:00Z ).
+- Todos os campos data, devem ser definidas automaticamente.
+- As funcionalidades pedido e produto podem conter: data de cadastro ( created_date ), data de atualização ( update_date ) e data de cancelamento ( cancel_date ).
+- A documentação da API ViaCEP pode ser encontrada no endereço https://viacep.com.br/
+
+## Estrutura do banco de dados
+O domínio possui a seguinte estrutura de banco de dados:
+
+![image](database_ecommerce_scheme.png)
+
+**Observações importantes sobre alterações nos requisitos do domínio Produto:**
+- Os requisitos do desáfio especificavam que a coluna que armazenaria o valor do produto na tabela `products` deveria ser nomeada de `value`, porém, devido a conflitos com o banco de dados H2 pois `value` é uma palavra-chave reservada do mesmo, a coluna foi renomeada para `price`.
+
+**Observações importantes sobre alterações nos requisitos do domínio Pedido:**
+- Os requisitos do desáfio especificavam que a coluna que armazenaria o endereço de entrega do pedido na tabela `orders` deveria ser nomeada de `address`, porem visando um melhor desenvolvimento seguindo um padrão de normalização, a coluna foi renomeada para `address_id` e foi criada uma nova tabela chamada `addresses` para armazenar os endereços de entrega dos pedidos por relacionamento do banco de dados.
+- Os requisitos do desáfio também especificavam que haveria uma coluna chamada `products` na tabela `orders` que armazenaria a lista de produtos do pedido, mas a nossa abordagem de desenvolvimento foi criar uma tabela intermediaria chamada `order_products` para armazenar essa lista de produtos, contendo o id do pedido e o id do produto, para que possamos ter um relacionamento entre as tabelas `orders` e `products`.
+
+Com essas alterações, foi possível concluir o desenvolvimento do projeto de forma mais eficiente e simples.
+
+## Produto (Product)
 O domínio **Produto** consiste em uma API REST que permite que os usuários criem, leiam, atualizem e excluam produtos.
 
-## Regras de negócio
+### Regras de negócio
 O domínio **Produto** possui as seguintes regras de negócio:
 - O nome do produto deve ser único;
 - A descrição do produto deve ter no mínimo 10 caracteres;
 - O valor do produto deve ser um número positivo.
 
-## Estrutura do banco de dados
-O domínio possui a seguinte estrutura de banco de dados:
-
-![image](database_products_scheme.png)
-
-**Observação Importante:** Os requisitos do desáfio especificavam inicialmente que a coluna que armazenaria o valor do produto deveria ser nomeada de `value`, porém, devido a conflitos com o banco de dados H2 pois `value` é uma palavra-chave reservada do mesmo, a coluna foi renomeada para `price`.
-
-## Endpoints
+### Endpoints
 A API disponibiliza endpoints REST para interação. Os principais são:
 - `POST /products`: Cria um novo produto.
 - `GET /products`: Recupera uma lista de todos os produtos cadastrados.
@@ -78,7 +90,7 @@ A API disponibiliza endpoints REST para interação. Os principais são:
 - `PUT /products/:id`: Atualiza as informações de um produto existente.
 - `DELETE /products/:id`: Deleta um produto existente.
 
-### Payloads
+#### Payloads
 
 Ademais, a API possui os seguintes payloads para interação:
 - `ProductCreate`: Payload utilizado para criação e atualização de um produto. Exemplo:
@@ -99,7 +111,7 @@ Ademais, a API possui os seguintes payloads para interação:
     }
     ```
 
-### Exemplos de requisições
+#### Exemplos de requisições
 **Para criar um novo produto:**
 - Requisição:
     ```json
@@ -179,6 +191,9 @@ Ademais, a API possui os seguintes payloads para interação:
     ```
 - Resposta (Status 204 - No Content):
   - Nesse caso, não há corpo de resposta, pois a resposta é sem conteúdo.
+
+## Pedido (Order)
+
 ---
 # Fluxo de erros
 Para tratamento de exceções, a API possui um fluxo de erros padrão, que consiste em um payload de resposta chamado `ErrorMessage`, que possui as informações do código do erro, o _status_, a mensagem e por fim, os detalhes se existir.
