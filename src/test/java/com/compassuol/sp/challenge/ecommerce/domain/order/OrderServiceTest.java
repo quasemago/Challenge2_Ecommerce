@@ -15,10 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
@@ -103,5 +106,14 @@ public class OrderServiceTest {
 
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
+    }
+
+    @Test
+    public void getOrderById_WithExistingId_ReturnsOrder() {
+        Order order = generateValidOrder(PaymentMethod.PIX, PRODUCT_1);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        Order sut = orderService.getOrderById(1L);
+        assertThat(sut).isEqualTo(order);
+        verify(orderRepository, times(1)).findById(1L);
     }
 }
