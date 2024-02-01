@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 
@@ -120,7 +121,7 @@ public class OrderControllerTest {
     public void cancelOrder_WithValidData_ReturnsOrder() throws Exception {
         final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
         sutOrder.setStatus(OrderStatus.CANCELED);
-        sutOrder.setCancelDate(LocalDateTime.now());
+        sutOrder.setCancelDate(LocalDateTime.now(ZoneOffset.UTC));
         sutOrder.setCancelReason("Cancelamento");
 
         when(orderService.cancelOrder(any(), any())).thenReturn(sutOrder);
