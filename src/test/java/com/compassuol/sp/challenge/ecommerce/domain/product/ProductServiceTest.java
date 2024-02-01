@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.*;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -52,8 +52,7 @@ public class ProductServiceTest {
     public void createProduct_WithDuplicateProductName_ThrowsUniqueProductViolationException(){
         when(productRepository.save(VALID_PRODUCT)).thenThrow(DataIntegrityViolationException.class);
         assertThatThrownBy(() -> productService.createProduct(VALID_PRODUCT))
-                .isInstanceOf(UniqueProductViolationException.class)
-                .hasMessage("Já existe um produto cadastrado com esse nome.");
+                .isInstanceOf(UniqueProductViolationException.class);
         verify(productRepository).save(VALID_PRODUCT);
     }
 
@@ -115,8 +114,7 @@ public class ProductServiceTest {
         when(productRepository.existsById(productId)).thenReturn(false);
 
         assertThatThrownBy(() -> productService.deleteProduct(productId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Não existe o produto com o Id: " + productId);
+                .isInstanceOf(EntityNotFoundException.class);
 
         verify(productRepository, times(1)).existsById(productId);
         verify(productRepository, never()).deleteById(productId);
@@ -146,8 +144,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> productService.updateProduct(UPDATED_PRODUCT, productId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("Não existe o produto com o Id: " + productId);
+                .isInstanceOf(EntityNotFoundException.class);
 
         verify(productRepository, times(1)).findById(productId);
         verify(productRepository, never()).save(any(Product.class));

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.VALID_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.VALID_PRODUCT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

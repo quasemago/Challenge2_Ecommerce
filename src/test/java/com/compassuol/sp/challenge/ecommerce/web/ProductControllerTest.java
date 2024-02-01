@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.INVALID_PRODUCT;
-import static com.compassuol.sp.challenge.ecommerce.domain.product.common.ProductsConstants.VALID_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.INVALID_PRODUCT;
+import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.VALID_PRODUCT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
