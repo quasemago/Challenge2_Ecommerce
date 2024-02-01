@@ -4,6 +4,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.web.controller.OrderController;
@@ -109,6 +110,12 @@ public class OrderControllerTest {
         verify(orderService, times(1)).create(any());
     }
 
+    private OrderCancelDto createOrderCancelDto(String reason) {
+        final OrderCancelDto dto = new OrderCancelDto();
+        dto.setCancelReason(reason);
+        return dto;
+    }
+
     @Test
     public void cancelOrder_WithValidData_ReturnsOrder() throws Exception {
         final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
@@ -131,12 +138,46 @@ public class OrderControllerTest {
         verify(orderService, times(1)).cancelOrder(any(), any());
     }
 
-    private OrderCancelDto createOrderCancelDto(String reason) {
-        final OrderCancelDto dto = new OrderCancelDto();
-        dto.setCancelReason(reason);
-        return dto;
+    @Test
+    public void cancelOrder_WithInvalidData_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(
+                        post("/orders/{id}/cancel", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(createOrderCancelDto(""))
+
+                                ))
+                .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void cancelOrder_WithNonExistingId_ReturnsNotFound() throws Exception {
+        when(orderService.cancelOrder(any(), any())).thenThrow(EntityNotFoundException.class);
+
+        mockMvc.perform(
+                        post("/orders/{id}/cancel", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(createOrderCancelDto("Cancelamento")))
+
+                )
+                .andExpect(status().isNotFound());
+
+        verify(orderService, times(1)).cancelOrder(any(), any());
+    }
+
+    @Test
+    public void cancelOrder_WithCancellationNotAllowed_ReturnsBadRequest() throws Exception {
+        when(orderService.cancelOrder(any(), any())).thenThrow(OrderCancellationNotAllowedException.class);
+
+        mockMvc.perform(
+                        post("/orders/{id}/cancel", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(createOrderCancelDto("Cancelamento")))
+
+                )
+                .andExpect(status().isBadRequest());
+
+        verify(orderService, times(1)).cancelOrder(any(), any());
+    }
 
     @Test
     public void getOrderById_WithExistingId_ReturnsOrder() throws Exception {

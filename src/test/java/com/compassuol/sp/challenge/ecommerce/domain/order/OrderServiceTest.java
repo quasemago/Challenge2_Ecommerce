@@ -5,6 +5,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
@@ -116,16 +117,74 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void cancelOrder_AlreadyCanceled() {
+    public void cancelOrder_WithValidData_ReturnsOrder() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
 
-        Long orderId = 1L;
-        String cancelReason = "Razão de cancelamento";
-        Order canceledOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
-        canceledOrder.setId(orderId);
-        canceledOrder.setStatus(CANCELED);
-        assertThrows(EntityNotFoundException.class, () ->
-                orderService.cancelOrder(orderId, cancelReason));
-        verify(orderRepository, never()).save(canceledOrder);
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+        when(orderRepository.save(any(Order.class))).thenReturn(validOrder);
+
+        Order sut = orderService.cancelOrder(validOrder.getId(), "Test Reason");
+
+        assertThat(sut).isNotNull();
+        assertThat(sut.getStatus()).isEqualTo(OrderStatus.CANCELED);
+        assertThat(sut.getCancelDate()).isNotNull();
+        assertThat(sut.getCancelReason()).isEqualTo("Test Reason");
+
+        verify(orderRepository, times(1)).findById(anyLong());
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    @Test
+    public void cancelOrder_WithNonExistingOrder_ThrowsEntityNotFoundException() {
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(EntityNotFoundException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void cancelOrder_WithAlreadyCanceledOrder_ThrowsException() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+        validOrder.setStatus(CANCELED);
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(OrderCancellationNotAllowedException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void cancelOrder_WithSentStatus_ThrowsException() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+        validOrder.setStatus(SENT);
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(OrderCancellationNotAllowedException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    public void cancelOrder_WithMore90DaysOrder_ThrowsException() {
+        final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        validOrder.setId(1L);
+        validOrder.setCreatedDate(validOrder.getCreatedDate().minusDays(91));
+
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(validOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(1L, "Test Reason"))
+                .isInstanceOf(OrderCancellationNotAllowedException.class);
+
+        verify(orderRepository, times(1)).findById(anyLong());
     }
 
     @Test
