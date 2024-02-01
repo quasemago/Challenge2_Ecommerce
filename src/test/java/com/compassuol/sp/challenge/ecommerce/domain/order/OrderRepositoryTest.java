@@ -61,12 +61,17 @@ public class OrderRepositoryTest {
 
     @Test
     public void getOrderById_WithExistingId_ReturnsOrder() {
-        Order order = testEntityManager.persistFlushFind(generateValidOrder(PaymentMethod.PIX, VALID_PRODUCT));
+        final Order validOrder = generateValidOrder(PaymentMethod.PIX, VALID_PRODUCT);
+        final Product savedProduct = testEntityManager.persistFlushFind(VALID_PRODUCT);
+        final List<OrderProduct> products = List.of(OrderProduct.builder().product(savedProduct).quantity(1).build());
 
-        Optional<Order> orderOpt = orderRepository.findById(order.getId());
+        validOrder.setProducts(products);
+        final Order savedOrder = testEntityManager.persistFlushFind(validOrder);
 
+
+        Optional<Order> orderOpt = orderRepository.findById(savedOrder.getId());
         assertThat(orderOpt).isNotEmpty();
-        assertThat(orderOpt.get()).isEqualTo(order);
+        assertThat(orderOpt.get()).isEqualTo(savedOrder);
     }
 
     @Test
@@ -76,6 +81,7 @@ public class OrderRepositoryTest {
         assertThat(orderOpt).isEmpty();
     }
 
+    @Test
     public void getAllOrders_WithStatus_ReturnsOrderList() {
         final Order validOrder = generateValidOrder(PaymentMethod.CREDIT_CARD, VALID_PRODUCT);
         final Product savedProduct = testEntityManager.persistFlushFind(VALID_PRODUCT);
