@@ -127,5 +127,17 @@ public class OrderServiceTest {
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
     }
 
+    @Test
+    public void cancelOrder_AlreadyCanceled() {
+
+        Long orderId = 1L;
+        String cancelReason = "Razão de cancelamento";
+        Order canceledOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        canceledOrder.setId(orderId);
+        canceledOrder.setStatus(CANCELED);
+        assertThrows(EntityNotFoundException.class, () ->
+                orderService.cancelOrder(orderId, cancelReason));
+        verify(orderRepository, never()).save(canceledOrder);
+    }
 
 }
