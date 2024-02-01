@@ -51,11 +51,18 @@ public class OrderRepositoryTest {
 
     @Test
     public void getOrderById_WithExistingId_ReturnsOrder() {
-        Order order = testEntityManager.persistFlushFind(generateValidOrder(PaymentMethod.PIX, ProductConstants.PRODUCT_1));
+        Order order = testEntityManager.persistFlushFind(generateValidOrder(PaymentMethod.PIX, VALID_PRODUCT));
 
         Optional<Order> orderOpt = orderRepository.findById(order.getId());
 
         assertThat(orderOpt).isNotEmpty();
         assertThat(orderOpt.get()).isEqualTo(order);
+    }
+
+    @Test
+    public void getOrderById_WithNonExistingId_ReturnsEmpty() {
+        Optional<Order> orderOpt = orderRepository.findById(1L);
+
+        assertThat(orderOpt).isEmpty();
     }
 }

@@ -9,6 +9,7 @@ import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.repository.OrderRepository;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
 import com.compassuol.sp.challenge.ecommerce.domain.product.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -114,6 +115,13 @@ public class OrderServiceTest {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         Order sut = orderService.getOrderById(1L);
         assertThat(sut).isEqualTo(order);
+        verify(orderRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void getOrderById_WithNonExistingId_ThrowsEntityNotFoundException() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> orderService.getOrderById(1L)).isInstanceOf(EntityNotFoundException.class);
         verify(orderRepository, times(1)).findById(1L);
     }
 }
