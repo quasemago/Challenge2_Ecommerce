@@ -1,5 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.web;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
@@ -18,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-
+import java.util.Collections;
 import java.util.List;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
@@ -27,8 +28,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.*;
 
 
 @ActiveProfiles("test")
@@ -138,4 +137,42 @@ public class OrderControllerTest {
 
         verify(orderService, times(1)).getOrderById(1L);
     }
+
+    @Test
+    public void getAllOrders_ReturnsListOfOrders() throws Exception {
+        final List<Order> orders = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD));
+
+        when(orderService.getAllByStatus(null)).thenReturn(orders);
+
+        List<OrderResponseDto> responseBody = OrderMapper.toDtoList(orders);
+        mockMvc.perform(get("/orders"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
+    }
+
+    @Test
+    public void getAllOrders_ReturnsEmptyList() throws Exception {
+        when(orderService.getAllByStatus(OrderStatus.CANCELED)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/orders"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    public void getAllOrders_WithStatusFilter_ReturnsOrdersList() throws Exception {
+        final List<Order> orders = List.of(generateValidOrder(PaymentMethod.CREDIT_CARD));
+        when(orderService.getAllByStatus(OrderStatus.SENT)).thenReturn(orders);
+
+        final List<OrderResponseDto> responseBody = OrderMapper.toDtoList(orders);
+
+        mockMvc.perform(
+                        get("/orders?status=SENT"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
+
+        verify(orderService, times(1)).getAllByStatus(OrderStatus.SENT);
+    }
 }
+
