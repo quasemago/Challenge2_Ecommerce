@@ -15,16 +15,13 @@ import com.compassuol.sp.challenge.ecommerce.web.dto.OrderCreateDto;
 import com.compassuol.sp.challenge.ecommerce.web.dto.ProductOrderDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +73,8 @@ public class OrderService {
         }
 
         order.setTotalValue(subtotal.subtract(order.getDiscount()));
-        order.setCreatedDate(LocalDateTime.now());
+
+        order.setCreatedDate(LocalDateTime.now(ZoneOffset.UTC));
         order.setStatus(OrderStatus.CONFIRMED);
 
         return orderRepository.save(order);
@@ -102,7 +100,7 @@ public class OrderService {
     public Order updateOrder(Order order, Long id) {
         Order existingOrder = getOrderById(id);
         existingOrder.setStatus(order.getStatus());
-        existingOrder.setUpdateDate(LocalDateTime.now());
+        existingOrder.setUpdateDate(LocalDateTime.now(ZoneOffset.UTC));
         return orderRepository.save(existingOrder);
     }
 
@@ -123,14 +121,15 @@ public class OrderService {
         }
 
         order.setStatus(OrderStatus.CANCELED);
-        order.setCancelDate(LocalDateTime.now());
+        order.setCancelDate(LocalDateTime.now(ZoneOffset.UTC));
         order.setCancelReason(cancelReason);
         return orderRepository.save(order);
     }
 
     private boolean canCancelOrder(Order order) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime orderCreatedDate = order.getCreatedDate();
+        System.out.println("orderCreatedDate: " + orderCreatedDate);
 
         return Duration.between(orderCreatedDate, now).toDays() <= 90;
     }
