@@ -1,5 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.web;
 
+import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
 
 import static com.compassuol.sp.challenge.ecommerce.common.OrderUtils.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,6 +108,9 @@ public class OrderControllerTest {
     @Test
     public void cancelOrder_WithValidData_ReturnsOrder() throws Exception {
         final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
+        sutOrder.setStatus(OrderStatus.CANCELED);
+        sutOrder.setCancelDate(LocalDateTime.now());
+        sutOrder.setCancelReason("Cancelamento");
 
         when(orderService.cancelOrder(any(), any())).thenReturn(sutOrder);
         final OrderResponseDto responseBody = OrderMapper.toDto(sutOrder);
@@ -112,14 +118,19 @@ public class OrderControllerTest {
         mockMvc.perform(
                         post("/orders/{id}/cancel", 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(new OrderCancelDto("Motivo do cancelamento")))
+                                .content(objectMapper.writeValueAsString(createOrderCancelDto("Cancelamento")))
 
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
 
         verify(orderService, times(1)).cancelOrder(any(), any());
+    }private OrderCancelDto createOrderCancelDto(String reason) {
+        final OrderCancelDto dto = new OrderCancelDto();
+        dto.setCancelReason(reason);
+        return dto;
     }
+
 
 }
 
