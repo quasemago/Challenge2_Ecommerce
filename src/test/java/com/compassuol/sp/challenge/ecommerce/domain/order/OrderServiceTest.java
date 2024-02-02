@@ -3,8 +3,7 @@ package com.compassuol.sp.challenge.ecommerce.domain.order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.consumer.AddressConsumerFeign;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignAddressNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Address;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
@@ -27,7 +26,6 @@ import static com.compassuol.sp.challenge.ecommerce.common.ProductConstants.PROD
 import static com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
@@ -87,21 +85,6 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_WithInvalidAddress_ThrowsException() {
-        final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
-        sutOrder.getAddress().setPostalCode("010010002");
-
-        when(productService.getProductById(anyLong())).thenReturn(sutOrder.getProducts().get(0).getProduct());
-        when(addressConsumerFeign.getAddressByCep("010010002")).thenThrow(OpenFeignBadRequestException.class);
-
-        assertThatThrownBy(() -> orderService.create(createOrderDto(sutOrder)))
-                .isInstanceOf(OpenFeignBadRequestException.class);
-
-        verify(productService, times(1)).getProductById(anyLong());
-        verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
-    }
-
-    @Test
     public void createOrder_WithNonExistingAddress_ThrowsException() {
         final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
         sutOrder.getAddress().setPostalCode("00000000");
@@ -110,7 +93,7 @@ public class OrderServiceTest {
         when(addressConsumerFeign.getAddressByCep("00000000")).thenReturn(Address.builder().postalCode(null).build());
 
         assertThatThrownBy(() -> orderService.create(createOrderDto(sutOrder)))
-                .isInstanceOf(OpenFeignNotFoundException.class);
+                .isInstanceOf(OpenFeignAddressNotFoundException.class);
 
         verify(productService, times(1)).getProductById(anyLong());
         verify(addressConsumerFeign, times(1)).getAddressByCep(anyString());
