@@ -129,7 +129,6 @@ public class OrderService {
     private boolean canCancelOrder(Order order) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime orderCreatedDate = order.getCreatedDate();
-        System.out.println("orderCreatedDate: " + orderCreatedDate);
 
         return Duration.between(orderCreatedDate, now).toDays() <= 90;
     }
