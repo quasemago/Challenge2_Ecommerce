@@ -17,7 +17,6 @@ public class AddressCreateDto {
     @NotBlank
     private String complement;
     @NotBlank
-    @Length(min = 8, max = 8, message = "O código postal deve ter 8 caracteres.")
-    @Pattern(regexp = "^[0-9]{8}$", message = "O código postal deve conter apenas números.")
+    @Pattern(regexp = "^[0-9]{8}$", message = "O código postal deve conter 8 caracteres sendo apenas números.")
     private String postalCode;
 }
