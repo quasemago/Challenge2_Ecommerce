@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -64,15 +65,17 @@ public class OrderService {
         final BigDecimal subtotal = order.getProducts().stream()
                 .map(product -> product.getProduct().getValue().multiply(BigDecimal.valueOf(product.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        order.setSubtotalValue(subtotal);
+        order.setSubtotalValue(subtotal.setScale(2, RoundingMode.HALF_EVEN));
 
         if (createDto.getPaymentMethod().equals(PaymentMethod.PIX.name())) {
-            order.setDiscount(subtotal.multiply(BigDecimal.valueOf(0.05)));
+            final BigDecimal discount = subtotal.multiply(BigDecimal.valueOf(0.05));
+            order.setDiscount(discount.setScale(2, RoundingMode.HALF_EVEN));
         } else {
             order.setDiscount(BigDecimal.ZERO);
         }
 
-        order.setTotalValue(subtotal.subtract(order.getDiscount()));
+        final BigDecimal totalValue = subtotal.subtract(order.getDiscount());
+        order.setTotalValue(totalValue.setScale(2, RoundingMode.HALF_EVEN));
 
         order.setCreatedDate(LocalDateTime.now(ZoneOffset.UTC));
         order.setStatus(OrderStatus.CONFIRMED);
@@ -87,7 +90,7 @@ public class OrderService {
         );
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Order> getAllByStatus(OrderStatus status) {
         if (status == null) {
             return orderRepository.findAllOrderByCreatedDateDesc();
