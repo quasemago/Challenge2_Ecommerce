@@ -23,7 +23,7 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotEmpty
-    @Column(name = "name", unique = true, nullable = false, length = 120)
+    @Column(name = "name", unique = true, nullable = false, length = 256)
     private String name;
     @Column(name = "price", nullable = false, columnDefinition = "DECIMAL(10,2)")
     @Positive

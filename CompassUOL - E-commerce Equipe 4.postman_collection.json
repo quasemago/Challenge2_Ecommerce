@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Teste nome produto\",\r\n    \"description\": \"Teste descricao\",\r\n    \"value\": 500.0\r\n}",
+					"raw": "{\r\n    \"name\": \"Teste nome produto\",\r\n    \"description\": \"Teste descricao\",\r\n    \"value\": 500.50\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -129,7 +129,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"products\": [\r\n        {\r\n            \"productId\": 2,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"productId\": 3,\r\n            \"quantity\": 2\r\n        }\r\n    ],\r\n    \"address\": {\r\n        \"number\": 10,\r\n        \"complement\": \"Próximo a av. Pitanga\",\r\n        \"postalCode\": \"01001000\"\r\n    },\r\n    \"paymentMethod\": \"PIX\"\r\n}",
+					"raw": "{\r\n    \"products\": [\r\n        {\r\n            \"productId\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"productId\": 2,\r\n            \"quantity\": 3\r\n        }\r\n    ],\r\n    \"address\": {\r\n        \"number\": 10,\r\n        \"complement\": \"Próximo a av. Pitanga\",\r\n        \"postalCode\": \"01001000\"\r\n    },\r\n    \"paymentMethod\": \"PIX\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -156,7 +156,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/orders/6",
+					"raw": "http://localhost:8080/orders/5",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -164,7 +164,7 @@
 					"port": "8080",
 					"path": [
 						"orders",
-						"6"
+						"5"
 					]
 				}
 			},
@@ -176,7 +176,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/orders",
+					"raw": "http://localhost:8080/orders?status=CONFIRMED",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -184,6 +184,12 @@
 					"port": "8080",
 					"path": [
 						"orders"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "CONFIRMED"
+						}
 					]
 				}
 			},
@@ -204,7 +210,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/orders/6",
+					"raw": "http://localhost:8080/orders/10",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -212,7 +218,7 @@
 					"port": "8080",
 					"path": [
 						"orders",
-						"6"
+						"10"
 					]
 				}
 			},
@@ -225,7 +231,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"cancelReason\": \"Pedido cancelado pelo cliente\"\r\n}",
+					"raw": "{\r\n    \"cancelReason\": \"Motivo do cancelamento\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -233,7 +239,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/orders/223/cancel",
+					"raw": "http://localhost:8080/orders/10/cancel",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -241,7 +247,7 @@
 					"port": "8080",
 					"path": [
 						"orders",
-						"223",
+						"10",
 						"cancel"
 					]
 				}

@@ -19,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,16 +65,19 @@ public class OrderService {
         final BigDecimal subtotal = order.getProducts().stream()
                 .map(product -> product.getProduct().getValue().multiply(BigDecimal.valueOf(product.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        order.setSubtotalValue(subtotal);
+        order.setSubtotalValue(subtotal.setScale(2, RoundingMode.HALF_EVEN));
 
         if (createDto.getPaymentMethod().equals(PaymentMethod.PIX.name())) {
-            order.setDiscount(subtotal.multiply(BigDecimal.valueOf(0.05)));
+            final BigDecimal discount = subtotal.multiply(BigDecimal.valueOf(0.05));
+            order.setDiscount(discount.setScale(2, RoundingMode.HALF_EVEN));
         } else {
             order.setDiscount(BigDecimal.ZERO);
         }
 
-        order.setTotalValue(subtotal.subtract(order.getDiscount()));
-        order.setCreatedDate(LocalDateTime.now());
+        final BigDecimal totalValue = subtotal.subtract(order.getDiscount());
+        order.setTotalValue(totalValue.setScale(2, RoundingMode.HALF_EVEN));
+
+        order.setCreatedDate(LocalDateTime.now(ZoneOffset.UTC));
         order.setStatus(OrderStatus.CONFIRMED);
 
         return orderRepository.save(order);
@@ -85,7 +90,7 @@ public class OrderService {
         );
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Order> getAllByStatus(OrderStatus status) {
         if (status == null) {
             return orderRepository.findAllOrderByCreatedDateDesc();
@@ -98,7 +103,7 @@ public class OrderService {
     public Order updateOrder(Order order, Long id) {
         Order existingOrder = getOrderById(id);
         existingOrder.setStatus(order.getStatus());
-        existingOrder.setUpdateDate(LocalDateTime.now());
+        existingOrder.setUpdateDate(LocalDateTime.now(ZoneOffset.UTC));
         return orderRepository.save(existingOrder);
     }
 
@@ -118,14 +123,17 @@ public class OrderService {
             throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado, pois já se passou 90 dias.");
         }
 
+        final LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+
         order.setStatus(OrderStatus.CANCELED);
-        order.setCancelDate(LocalDateTime.now());
+        order.setCancelDate(now);
+        order.setUpdateDate(now);
         order.setCancelReason(cancelReason);
         return orderRepository.save(order);
     }
 
     private boolean canCancelOrder(Order order) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime orderCreatedDate = order.getCreatedDate();
 
         return Duration.between(orderCreatedDate, now).toDays() <= 90;

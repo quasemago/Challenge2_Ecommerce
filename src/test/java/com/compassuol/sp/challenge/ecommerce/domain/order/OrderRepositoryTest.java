@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDateTime;
 
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +76,7 @@ public class OrderRepositoryTest {
         final Order updatedOrder = new Order();
         updatedOrder.setId(savedOrder.getId());
         updatedOrder.setStatus(OrderStatus.SENT);
-        updatedOrder.setUpdateDate(LocalDateTime.now());
+        updatedOrder.setUpdateDate(LocalDateTime.now(ZoneOffset.UTC));
 
 
         final Order updatedEntity = orderRepository.save(updatedOrder);
