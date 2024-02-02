@@ -123,8 +123,11 @@ public class OrderService {
             throw new OrderCancellationNotAllowedException("Pedido não pode ser cancelado, pois já se passou 90 dias.");
         }
 
+        final LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+
         order.setStatus(OrderStatus.CANCELED);
-        order.setCancelDate(LocalDateTime.now(ZoneOffset.UTC));
+        order.setCancelDate(now);
+        order.setUpdateDate(now);
         order.setCancelReason(cancelReason);
         return orderRepository.save(order);
     }
