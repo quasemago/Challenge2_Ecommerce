@@ -2,8 +2,7 @@ package com.compassuol.sp.challenge.ecommerce.web;
 
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.OrderStatus;
 import com.compassuol.sp.challenge.ecommerce.domain.order.enums.PaymentMethod;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignAddressNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.model.Order;
 import com.compassuol.sp.challenge.ecommerce.domain.order.service.OrderService;
@@ -78,8 +77,6 @@ public class OrderControllerTest {
 
     @Test
     public void createOrder_WithInvalidAddress_ReturnsBadRequest() throws Exception {
-        when(orderService.create(any())).thenThrow(OpenFeignBadRequestException.class);
-
         final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
         sutOrder.getAddress().setPostalCode("010000000");
 
@@ -89,13 +86,11 @@ public class OrderControllerTest {
                                 .content(objectMapper.writeValueAsString(createOrderDto(sutOrder)))
                 )
                 .andExpect(status().isBadRequest());
-
-        verify(orderService, times(1)).create(any());
     }
 
     @Test
     public void createOrder_WithNonExistingAddress_ReturnsBadRequest() throws Exception {
-        when(orderService.create(any())).thenThrow(OpenFeignNotFoundException.class);
+        when(orderService.create(any())).thenThrow(OpenFeignAddressNotFoundException.class);
 
         final Order sutOrder = generateValidOrder(PaymentMethod.CREDIT_CARD);
         sutOrder.getAddress().setPostalCode("00000000");
