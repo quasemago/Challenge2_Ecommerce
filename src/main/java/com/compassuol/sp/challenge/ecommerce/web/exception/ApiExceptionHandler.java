@@ -1,7 +1,6 @@
 package com.compassuol.sp.challenge.ecommerce.web.exception;
 
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignBadRequestException;
-import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignNotFoundException;
+import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OpenFeignAddressNotFoundException;
 import com.compassuol.sp.challenge.ecommerce.domain.order.exception.OrderCancellationNotAllowedException;
 import com.compassuol.sp.challenge.ecommerce.domain.product.exception.UniqueProductViolationException;
 import jakarta.persistence.EntityNotFoundException;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,16 +42,8 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
-    @ExceptionHandler(OpenFeignBadRequestException.class)
-    public ResponseEntity<ErrorMessage> handleOpenFeignBadRequestException(OpenFeignBadRequestException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage()));
-    }
-
-    @ExceptionHandler(OpenFeignNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleOpenFeignNotFoundException(OpenFeignNotFoundException ex) {
+    @ExceptionHandler(OpenFeignAddressNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleOpenFeignNotFoundException(OpenFeignAddressNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
